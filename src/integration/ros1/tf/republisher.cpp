@@ -1,27 +1,11 @@
 #include <knowrob/ros/tf/republisher.h>
-#include <std_msgs/Float64.h>
+#include <std_msgs/msg/float64.hpp>
 
 #define CLEAR_MEMORY_AFTER_PUBLISH 0
 
-TFRepublisher::TFRepublisher(double frequency) :
-		realtime_factor_(1.0),
+TFRepublisher::TFRepublisher(rclcpp::Node* node, double frequency) :
 		frequency_(frequency),
-		loop_(true),
-		has_next_(false),
-		has_new_goal_(false),
-		is_running_(true),
-		reset_(false),
-		has_been_skipped_(false),
-		skip_reset_(false),
-		db_name_("neems"),
-		db_collection_("tf"),
-		collection_(NULL),
-		time_min_(0.0),
-		time_max_(0.0),
-		time_(0.0),
-		cursor_(NULL),
-		memory_(),
-		publisher_(memory_,frequency,CLEAR_MEMORY_AFTER_PUBLISH),
+		publisher_(node, memory_,frequency,CLEAR_MEMORY_AFTER_PUBLISH),
 	    thread_(&TFRepublisher::loop, this),
 	    tick_thread_(&TFRepublisher::tick_loop, this)
 {
@@ -45,14 +29,16 @@ void TFRepublisher::clear()
 
 void TFRepublisher::tick_loop()
 {
-	ros::NodeHandle node;
-	ros::Rate r(frequency_);
-	ros::Publisher tick(node.advertise<std_msgs::Float64>("republisher_tick",1));
-	std_msgs::Float64 time_msg;
-	double last_t = ros::Time::now().toSec();
+	auto node = std::make_shared<rclcpp::Node>("tf_knowrob_republisher");
+	rclcpp::Rate r(frequency_);
+	auto tick = node->create_publisher<std_msgs::msg::Float64>("republisher_tick",1);
+	std_msgs::msg::Float64 time_msg;
+	rclcpp::Clock system_clock(RCL_SYSTEM_TIME);
+	const rclcpp::Time& time = system_clock.now();
+	double last_t = time.seconds();
 
-	while(ros::ok()) {
-		double this_t = ros::Time::now().toSec();
+	while(rclcpp::ok()) {
+		double this_t = system_clock.now().seconds();
 		
 		if(time_max_ > 0.0 ) {
 			double dt = this_t - last_t;
@@ -71,7 +57,7 @@ void TFRepublisher::tick_loop()
 			}
 			// publish time value
 			time_msg.data = time_;
-			tick.publish(time_msg);
+			tick->publish(time_msg);
 		}
 		
 		last_t = this_t;
@@ -83,8 +69,8 @@ void TFRepublisher::tick_loop()
 
 void TFRepublisher::loop()
 {
-	ros::Rate r(frequency_);
-	while(ros::ok()) {
+	rclcpp::Rate r(frequency_);
+	while(rclcpp::ok()) {
 		if(time_>0.0) {
 			advance_cursor();
 		}
@@ -110,7 +96,7 @@ void TFRepublisher::set_progress(double percent)
 
 void TFRepublisher::set_now(double time)
 {
-	time_ = time_min_;
+	time_ = time;
 	has_been_skipped_ = true;
 }
 
@@ -245,14 +231,14 @@ void TFRepublisher::advance_cursor()
 		// if this is the case, reset next loop.
 		bson_error_t cursor_error;
 		if (mongoc_cursor_error (cursor_, &cursor_error)) {
-			ROS_ERROR("[TFRepublisher] mongo cursor error: %s. Resetting..", cursor_error.message);
+			RCLCPP_ERROR(rclcpp::get_logger("TFRepublisher"),"[TFRepublisher] mongo cursor error: %s. Resetting..", cursor_error.message);
 			reset_ = true;
 			break;
 		}
 
 		if(has_next_) {
 			double t_next = (ts_.header.stamp.sec * 1000.0 +
-					ts_.header.stamp.nsec / 1000000.0) / 1000.0;
+					ts_.header.stamp.nanosec / 1000000.0) / 1000.0;
 			if(t_next > this_time) {
 				// the next transform is too far in the future
 				break;
@@ -296,16 +282,13 @@ void TFRepublisher::read_transform(const bson_t *doc)
 			bson_iter_recurse(&iter, &header_iter);
 			while(bson_iter_next(&header_iter)) {
 				const char *header_key = bson_iter_key(&header_iter);
-				if(strcmp("seq",header_key)==0) {
-					ts_.header.seq = bson_iter_int32(&header_iter);
-				}
-				else if(strcmp("frame_id",header_key)==0) {
+				if(strcmp("frame_id",header_key)==0) {
 					ts_.header.frame_id = std::string(bson_iter_utf8(&header_iter,NULL));
 				}
 				else if(strcmp("stamp",header_key)==0) {
 					int64_t msec_since_epoch = bson_iter_date_time(&header_iter);
 					ts_.header.stamp.sec  = msec_since_epoch / 1000;
-					ts_.header.stamp.nsec = (msec_since_epoch % 1000) * 1000 * 1000;
+					ts_.header.stamp.nanosec = (msec_since_epoch % 1000) * 1000 * 1000;
 				}
 			}
 		}

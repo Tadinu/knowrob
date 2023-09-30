@@ -15,7 +15,7 @@ class ActionStreamer(object):
         self.token_publisher = rospy.Publisher('/parser/token', EventToken, queue_size=1)
         # HACK: need to wait until publisher is running
         rospy.sleep(0.5)
-        rospy.loginfo('token streamer is running')
+        logger.info('token streamer is running')
 
     def support(self,obj,location):
         self.begin_('Supporting',[location,obj])

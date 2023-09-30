@@ -5,9 +5,9 @@
 #include <map>
 
 // ROS
-#include <ros/ros.h>
-#include <visualization_msgs/Marker.h>
-#include <visualization_msgs/MarkerArray.h>
+#include <rclcpp/rclcpp.hpp>
+#include <visualization_msgs/msg/marker.hpp>
+#include <visualization_msgs/msg/marker_array.hpp>
 // SWI Prolog
 #define PL_SAFE_ARG_MACROS
 #include <SWI-cpp.h>
@@ -15,27 +15,27 @@
 /**
  * A marker publisher that maps Prolog terms to marker messages.
  */
-class MarkerPublisher
+class MarkerPublisher : public rclcpp::Node
 {
 public:
-	MarkerPublisher(ros::NodeHandle &node);
+	MarkerPublisher(const char* ns);
 
 	/**
 	 * Publish an array of marker messages.
 	 */
-	void publish(visualization_msgs::MarkerArray &array_msg);
+	void publish(visualization_msgs::msg::MarkerArray &array_msg);
 
 	/**
 	 * Sets the current marker from a Prolog term and returns a reference
 	 * to the marker.
 	 */
-	const visualization_msgs::Marker& setMarker(const PlTerm &term);
+	const visualization_msgs::msg::Marker& setMarker(const PlTerm &term);
 
 protected:
-	ros::Publisher pub_;
-	visualization_msgs::Marker msg_;
+	rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr pub_;
+	visualization_msgs::msg::Marker msg_;
 	std::map<std::string,int> idMap_;
-	int idCounter_;
+	int idCounter_ = 0;
 
 	int getID(const std::string &name);
 };

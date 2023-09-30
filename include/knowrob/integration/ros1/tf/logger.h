@@ -6,9 +6,10 @@
 // MONGO
 #include <mongoc.h>
 // ROS
-#include <ros/ros.h>
-#include <tf/tfMessage.h>
-#include <geometry_msgs/TransformStamped.h>
+#include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/string.hpp>
+#include <tf2_msgs/msg/tf_message.hpp>
+#include <geometry_msgs/msg/transform_stamped.hpp>
 // SWI Prolog
 #define PL_SAFE_ARG_MACROS
 #include <SWI-cpp.h>
@@ -21,7 +22,7 @@
 class TFLogger
 {
 public:
-	TFLogger(ros::NodeHandle &node,
+	TFLogger(rclcpp::Node* node,
 			TFMemory &memory,
 			const std::string &topic="tf");
 	~TFLogger();
@@ -53,30 +54,31 @@ public:
 	double get_angular_threshold() const
 	{ return angularThreshold_; }
 
-	void store(const geometry_msgs::TransformStamped &ts);
+	void store(const geometry_msgs::msg::TransformStamped &ts);
 
 protected:
-	ros::Subscriber subscriber_;
-	ros::Subscriber subscriber_static_;
 	TFMemory &memory_;
-	double vectorialThreshold_;
-	double angularThreshold_;
-	double timeThreshold_;
-	std::string db_name_;
+	double vectorialThreshold_ = 0.001;
+	double angularThreshold_ = 0.001;
+	double timeThreshold_ = -1.0;
+	std::string db_name_ = "roslog";
     std::string db_uri_;
 	std::string topic_;
 
 	char buf_[16];
-	size_t keylen_;
+	size_t keylen_ = 0;
+
+	rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr subscriber_;
+	rclcpp::Subscription<tf2_msgs::msg::TFMessage>::SharedPtr subscriber_static_;
 
 	void store_document(bson_t *doc);
 
-	bool ignoreTransform(const geometry_msgs::TransformStamped &ts);
+	bool ignoreTransform(const geometry_msgs::msg::TransformStamped &ts);
 
-	void callback(const tf::tfMessage::ConstPtr& msg);
+	void callback(const tf2_msgs::msg::TFMessage::SharedPtr msg);
 
 	void appendTransform(bson_t *ts_doc,
-			const geometry_msgs::TransformStamped &ts);
+			const geometry_msgs::msg::TransformStamped &ts);
 };
 
 #endif //__KNOWROB_TF_LOGGER__

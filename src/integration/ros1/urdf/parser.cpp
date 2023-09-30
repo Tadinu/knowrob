@@ -159,14 +159,14 @@ urdf::JointConstSharedPtr get_joint(const char* urdf_id, const char* joint_name)
 }
 
 bool link_has_visual_with_index(const urdf::LinkConstSharedPtr link, long index) {
-    return link && (index >= 0) && (index < link->visual_array.size()) &&
+    return link && (index >= 0) && (index < long(link->visual_array.size())) &&
             (link->visual_array[index]) &&
 			//(link->visual_array[index]->name.compare("") != 0) &&
 			(link->visual_array[index]->geometry);
 }
 
 bool link_has_collision_with_index(const urdf::LinkConstSharedPtr link, long index) {
-    return link && (index >= 0) && (index < link->collision_array.size()) &&
+    return link && (index >= 0) && (index < long(link->collision_array.size())) &&
             (link->collision_array[index]) &&
 			//(link->collision_array[index]->name.compare("") != 0) &&
 			(link->collision_array[index]->geometry);

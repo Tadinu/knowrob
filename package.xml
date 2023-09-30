@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package format="2">
+<package format="3">
   <name>knowrob</name>
   <version>2.0.0</version>
   <description>KnowRob is a knowledge processing framework for robots. It has originally
@@ -21,19 +21,37 @@
   <url type="website">http://www.knowrob.org</url>
   <url type="bugtracker">https://github.com/knowrob/knowrob/issues</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>message_generation</build_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <build_depend>rcutils</build_depend>
+  <build_depend>rmw_implementation_cmake</build_depend>
   <build_depend>geometry_msgs</build_depend>
   <build_depend>actionlib_msgs</build_depend>
   <build_depend>visualization_msgs</build_depend>
-  <exec_depend>message_runtime</exec_depend>
   <exec_depend>actionlib</exec_depend>
 
-  <depend>roslib</depend>
-  <depend>roscpp</depend>
+  <build_depend>rosidl_default_generators</build_depend>
+
+  <!-- <build_depend>rosprolog</build_depend> -->
+
+  <depend>rmw_implementation</depend>
+  <depend>rcl</depend>
+  <depend>rcl_action</depend>
+  <depend>rcl_yaml_param_parser</depend>
+  <depend>unique_identifier_msgs</depend>
+
+  <depend>rclswi</depend>
   <depend>swi-prolog</depend>
   <depend>urdf</depend>
   <depend>eigen</depend>
   <depend>libmongoc-dev</depend>
+  <exec_depend>rcl_interfaces</exec_depend>
+  <exec_depend>rosidl_default_runtime</exec_depend>
+  
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+
+  <member_of_group>rosidl_interface_packages</member_of_group>
 
 </package>

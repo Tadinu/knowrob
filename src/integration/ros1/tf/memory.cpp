@@ -1,17 +1,17 @@
 #include <knowrob/ros/tf/memory.h>
 
-static inline double get_stamp(const geometry_msgs::TransformStamped &ts)
+static inline double get_stamp(const geometry_msgs::msg::TransformStamped &ts)
 {
 	unsigned long long time = (unsigned long long)(
-			ts.header.stamp.sec * 1000.0 + ts.header.stamp.nsec / 1000000.0);
+			ts.header.stamp.sec * 1000.0 + ts.header.stamp.nanosec / 1000000.0);
 	return (double)(time/1000.0);
 }
 
-static geometry_msgs::TransformStamped dummy;
+static geometry_msgs::msg::TransformStamped dummy;
 
 //#define SEND_UNKNOWN_FAR_AWAY
 #ifdef SEND_UNKNOWN_FAR_AWAY
-static geometry_msgs::TransformStamped far_away;
+static geometry_msgs::msg::TransformStamped far_away;
 #endif
 
 TFMemory::TFMemory() :
@@ -55,10 +55,10 @@ bool TFMemory::clear_transforms_only()
 	return true;
 }
 
-const geometry_msgs::TransformStamped& TFMemory::get_transform(
+const geometry_msgs::msg::TransformStamped& TFMemory::get_transform(
 		const std::string &frame, int buffer_index) const
 {
-	const std::map<std::string, geometry_msgs::TransformStamped>::const_iterator
+	const std::map<std::string, geometry_msgs::msg::TransformStamped>::const_iterator
 		&needle = transforms_[buffer_index].find(frame);
 	if(needle != transforms_[buffer_index].end()) {
 		return needle->second;
@@ -68,13 +68,13 @@ const geometry_msgs::TransformStamped& TFMemory::get_transform(
 	}
 }
 
-void TFMemory::set_transform(const geometry_msgs::TransformStamped &ts)
+void TFMemory::set_transform(const geometry_msgs::msg::TransformStamped &ts)
 {
 	std::lock_guard<std::mutex> guard(transforms_lock_);
 	transforms_[buffer_index_][ts.child_frame_id] = ts;
 }
 
-void TFMemory::set_managed_transform(const geometry_msgs::TransformStamped &ts)
+void TFMemory::set_managed_transform(const geometry_msgs::msg::TransformStamped &ts)
 {
 	std::lock_guard<std::mutex> guard1(transforms_lock_);
 	std::lock_guard<std::mutex> guard2(names_lock_);
@@ -82,7 +82,7 @@ void TFMemory::set_managed_transform(const geometry_msgs::TransformStamped &ts)
 	transforms_[buffer_index_][ts.child_frame_id] = ts;
 }
 
-bool TFMemory::loadTF(tf::tfMessage &tf_msg, bool clear_memory)
+bool TFMemory::loadTF(tf2_msgs::msg::TFMessage &tf_msg, bool clear_memory)
 {
 	if(managed_frames_[buffer_index_].empty()) {
 		return true;
@@ -108,19 +108,20 @@ bool TFMemory::loadTF(tf::tfMessage &tf_msg, bool clear_memory)
 	return true;
 }
 
-void TFMemory::loadTF_internal(tf::tfMessage &tf_msg, int buffer_index)
+void TFMemory::loadTF_internal(tf2_msgs::msg::TFMessage &tf_msg, int buffer_index)
 {
-	const ros::Time& time = ros::Time::now();
+	rclcpp::Clock system_clock(RCL_SYSTEM_TIME);
+	const rclcpp::Time& time = system_clock.now();
 	// loop over all frames
 	for(std::set<std::string>::const_iterator
 			it=managed_frames_[buffer_index].begin();
 			it!=managed_frames_[buffer_index].end(); ++it)
 	{
 		const std::string &name = *it;
-		std::map<std::string, geometry_msgs::TransformStamped>::iterator
+		std::map<std::string, geometry_msgs::msg::TransformStamped>::iterator
 			needle = transforms_[buffer_index].find(name);
 		if(needle != transforms_[buffer_index].end()) {
-			geometry_msgs::TransformStamped &tf_transform = needle->second;
+			geometry_msgs::msg::TransformStamped &tf_transform = needle->second;
 			tf_transform.header.stamp = time;
 			tf_msg.transforms.push_back(tf_transform);
 		}
@@ -137,7 +138,7 @@ void TFMemory::loadTF_internal(tf::tfMessage &tf_msg, int buffer_index)
 bool TFMemory::get_pose_term(const std::string &frame, PlTerm *term, double *stamp)
 {
 	if(!has_transform(frame)) return false;
-	const geometry_msgs::TransformStamped &ts = get_transform(frame);
+	const geometry_msgs::msg::TransformStamped &ts = get_transform(frame);
 
 	PlTail pose_list(*term); {
 		pose_list.append(ts.header.frame_id.c_str());
@@ -170,7 +171,7 @@ bool TFMemory::get_pose_term(const std::string &frame, PlTerm *term, double *sta
 
 bool TFMemory::set_pose_term(const std::string &frame, const PlTerm &term, double stamp)
 {
-	const geometry_msgs::TransformStamped &ts_old = get_transform(frame);
+	const geometry_msgs::msg::TransformStamped &ts_old = get_transform(frame);
 	// make sure the pose is more recent then the one stored
 	if(stamp<0.0) {
 		// force setting pose if stamp<0.0
@@ -180,14 +181,14 @@ bool TFMemory::set_pose_term(const std::string &frame, const PlTerm &term, doubl
 		return false;
 	}
 	//
-	geometry_msgs::TransformStamped ts = ts_old;
+	geometry_msgs::msg::TransformStamped ts = ts_old;
 	create_transform(&ts,frame,term,stamp);
 	set_managed_transform(ts);
 	return true;
 }
 
 void TFMemory::create_transform(
-		geometry_msgs::TransformStamped *ts,
+		geometry_msgs::msg::TransformStamped *ts,
 		const std::string &frame,
 		const PlTerm &term,
 		double stamp)
@@ -200,7 +201,7 @@ void TFMemory::create_transform(
 	ts->header.frame_id = std::string((char*)e);
 	unsigned long long time_ms = ((unsigned long long)(stamp*1000.0));
 	ts->header.stamp.sec  = time_ms / 1000;
-	ts->header.stamp.nsec = (time_ms % 1000) * 1000 * 1000;
+	ts->header.stamp.nanosec = (time_ms % 1000) * 1000 * 1000;
 	// translation
 	tail.next(e);
 	PlTail pos_list(e);

@@ -6,9 +6,9 @@
 // MONGO
 #include <mongoc.h>
 // ROS
-#include <ros/ros.h>
-#include <tf/tfMessage.h>
-#include <geometry_msgs/TransformStamped.h>
+#include <rclcpp/rclcpp.hpp>
+#include <tf2_msgs/msg/tf_message.hpp>
+#include <geometry_msgs/msg/transform_stamped.hpp>
 // SWI Prolog
 #define PL_SAFE_ARG_MACROS
 #include <SWI-cpp.h>
@@ -23,7 +23,7 @@
 class TFRepublisher
 {
 public:
-	TFRepublisher(double frequency=10.0);
+	TFRepublisher(rclcpp::Node* node, double frequency=10.0);
 
 	~TFRepublisher();
 
@@ -54,32 +54,33 @@ public:
 	void clear();
 
 protected:
-	double realtime_factor_;
-	double frequency_;
-	bool loop_;
-	bool is_running_;
-	bool reset_;
-	bool skip_reset_;
-	bool has_been_skipped_;
-	std::thread thread_;
-	std::thread tick_thread_;
+	double realtime_factor_ = 1.0;
+	double frequency_ = 0;
+	bool loop_ = true;
+	bool is_running_ = true;
+	bool reset_ = false;
+	bool skip_reset_ = false;
+	bool has_been_skipped_ = false;
 
-	double time_min_;
-	double time_max_;
-	double time_;
+	double time_min_ = 0.0;
+	double time_max_ = 0.0;
+	double time_ = 0.0;
 
 	std::string db_name_;
     std::string db_uri_;
 	std::string db_collection_;
     std::shared_ptr<MongoCollection> collection_;
 
-	mongoc_cursor_t *cursor_;
-	geometry_msgs::TransformStamped ts_;
-	bool has_next_;
-	bool has_new_goal_;
+	mongoc_cursor_t *cursor_ = nullptr;
+	geometry_msgs::msg::TransformStamped ts_;
+	bool has_next_ = false;
+	bool has_new_goal_ = false;
 
 	TFMemory memory_;
 	TFPublisher publisher_;
+
+	std::thread thread_;
+	std::thread tick_thread_;
 
 	void loop();
 	void tick_loop();

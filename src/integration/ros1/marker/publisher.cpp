@@ -1,18 +1,17 @@
 #include <knowrob/ros/marker/publisher.h>
 
-MarkerPublisher::MarkerPublisher(ros::NodeHandle &node) :
-		pub_(node.advertise<visualization_msgs::MarkerArray>("visualization_marker_array", 5)),
-		idCounter_(0)
+MarkerPublisher::MarkerPublisher(const char* ns) : rclcpp::Node(ns),
+		pub_(create_publisher<visualization_msgs::msg::MarkerArray>("visualization_marker_array", 5))
 {
 	msg_.ns = "belief_state";
 	msg_.frame_locked = true;
 	msg_.mesh_use_embedded_materials = true;
-	msg_.lifetime = ros::Duration();
+	msg_.lifetime = rclcpp::Duration(5,0);
 }
 
-void MarkerPublisher::publish(visualization_msgs::MarkerArray &array_msg)
+void MarkerPublisher::publish(visualization_msgs::msg::MarkerArray &array_msg)
 {
-	pub_.publish(array_msg);
+	pub_->publish(array_msg);
 }
 
 int MarkerPublisher::getID(const std::string &name)
@@ -28,18 +27,18 @@ int MarkerPublisher::getID(const std::string &name)
 	}
 }
 
-const visualization_msgs::Marker& MarkerPublisher::setMarker(const PlTerm &data_term)
+const visualization_msgs::msg::Marker& MarkerPublisher::setMarker(const PlTerm &data_term)
 {
 	// data_term=[Action,ID,Type,Pose,Scale,Color,Mesh,Text]
 	PlTail l0(data_term);
 	PlTerm e0, e1, e2;
 
 	l0.next(e0); msg_.action = (int)e0;
-	if(msg_.action == visualization_msgs::Marker::DELETEALL)
+	if(msg_.action == visualization_msgs::msg::Marker::DELETEALL)
 		return msg_;
 
 	l0.next(e0); msg_.id = getID(std::string((char*)e0));
-	if(msg_.action == visualization_msgs::Marker::DELETE)
+	if(msg_.action == visualization_msgs::msg::Marker::DELETE)
 		return msg_;
 
 	l0.next(e0); msg_.type = (int)e0;
@@ -87,12 +86,11 @@ const visualization_msgs::Marker& MarkerPublisher::setMarker(const PlTerm &data_
 	return msg_;
 }
 
-static ros::NodeHandle node;
-static MarkerPublisher pub(node);
+static MarkerPublisher pub("MarkerPublisher");
 
 PREDICATE(marker_array_publish, 1)
 {
-	visualization_msgs::MarkerArray msg;
+	visualization_msgs::msg::MarkerArray msg;
 	// populate array
 	PlTail list(PL_A1);
 	PlTerm member;

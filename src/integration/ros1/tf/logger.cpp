@@ -1,20 +1,17 @@
-#include <tf/LinearMath/Quaternion.h>
+#include <tf2/LinearMath/Quaternion.h>
 
 #include <knowrob/ros/tf/logger.h>
 #include <knowrob/mongodb/MongoInterface.h>
 
 TFLogger::TFLogger(
-		ros::NodeHandle &node,
+		rclcpp::Node* node,
 		TFMemory &memory,
 		const std::string &topic) :
 		memory_(memory),
-		timeThreshold_(-1.0),
-		vectorialThreshold_(0.001),
-		angularThreshold_(0.001),
-		db_name_("roslog"),
 		topic_(topic),
-		subscriber_static_(node.subscribe("tf_static", 1000, &TFLogger::callback, this)),
-		subscriber_(node.subscribe(topic, 1000, &TFLogger::callback, this))
+		subscriber_(node->create_subscription<tf2_msgs::msg::TFMessage>(topic, 1000, std::bind(&TFLogger::callback,this, std::placeholders::_1))),
+		subscriber_static_(node->create_subscription<tf2_msgs::msg::TFMessage>(
+      						"tf_static", 1000, std::bind(&TFLogger::callback,this, std::placeholders::_1)))
 {
 }
 
@@ -30,11 +27,11 @@ void TFLogger::store_document(bson_t *doc)
 	if(!mongoc_collection_insert(
 			(*collection_)(),MONGOC_INSERT_NONE,doc,NULL,&err))
 	{
-		ROS_WARN("[TFLogger] insert failed: %s.", err.message);
+		RCLCPP_WARN(rclcpp::get_logger("TFLogger"),"[TFLogger] insert failed: %s.", err.message);
 	}
 }
 
-void TFLogger::store(const geometry_msgs::TransformStamped &ts)
+void TFLogger::store(const geometry_msgs::msg::TransformStamped &ts)
 {
 	bson_t *doc = bson_new();
 	appendTransform(doc, ts);
@@ -44,12 +41,12 @@ void TFLogger::store(const geometry_msgs::TransformStamped &ts)
 	bson_destroy(doc);
 }
 
-void TFLogger::callback(const tf::tfMessage::ConstPtr& msg)
+void TFLogger::callback(const tf2_msgs::msg::TFMessage::SharedPtr msg)
 {
-	std::vector<geometry_msgs::TransformStamped>::const_iterator it;
+	std::vector<geometry_msgs::msg::TransformStamped>::const_iterator it;
 	for (it = msg->transforms.begin(); it != msg->transforms.end(); ++it)
 	{
-		const geometry_msgs::TransformStamped &ts = *it;
+		const geometry_msgs::msg::TransformStamped &ts = *it;
 		if(!ignoreTransform(ts)) {
 			store(ts);
 			// NOTE: IMPORTANT: we assign *ts* to its frame in memory
@@ -65,7 +62,7 @@ void TFLogger::callback(const tf::tfMessage::ConstPtr& msg)
 	}
 }
 
-bool TFLogger::ignoreTransform(const geometry_msgs::TransformStamped &ts0)
+bool TFLogger::ignoreTransform(const geometry_msgs::msg::TransformStamped &ts0)
 {
 	const std::string &child  = ts0.child_frame_id;
 	if(!memory_.has_transform(child)) {
@@ -76,7 +73,7 @@ bool TFLogger::ignoreTransform(const geometry_msgs::TransformStamped &ts0)
 		// managed frames are asserted into DB back-end directly
 		return true;
 	}
-	const geometry_msgs::TransformStamped &ts1 = memory_.get_transform(child);
+	const geometry_msgs::msg::TransformStamped &ts1 = memory_.get_transform(child);
 	// do not ignore in case parent frame has changed
 	const std::string &parent0 = ts0.header.frame_id;
 	const std::string &parent1 = ts1.header.frame_id;
@@ -86,15 +83,15 @@ bool TFLogger::ignoreTransform(const geometry_msgs::TransformStamped &ts0)
 	// tests whether temporal distance exceeds threshold
 	if(timeThreshold_>0.0) {
 		double timeDistance = (
-				(ts0.header.stamp.sec * 1000.0 + ts0.header.stamp.nsec / 1000000.0) -
-				(ts1.header.stamp.sec * 1000.0 + ts1.header.stamp.nsec / 1000000.0)) / 1000.0;
+				(ts0.header.stamp.sec * 1000.0 + ts0.header.stamp.nanosec / 1000000.0) -
+				(ts1.header.stamp.sec * 1000.0 + ts1.header.stamp.nanosec / 1000000.0)) / 1000.0;
 		if(timeDistance<0 || timeDistance > timeThreshold_) {
 			return false;
 		}
 	}
 	// tests whether vectorial distance exceeds threshold
-	const geometry_msgs::Vector3 &pos0 = ts0.transform.translation;
-	const geometry_msgs::Vector3 &pos1 = ts1.transform.translation;
+	const geometry_msgs::msg::Vector3 &pos0 = ts0.transform.translation;
+	const geometry_msgs::msg::Vector3 &pos1 = ts1.transform.translation;
 	double vectorialDistance = sqrt(
 			((pos0.x - pos1.x) * (pos0.x - pos1.x)) +
 			((pos0.y - pos1.y) * (pos0.y - pos1.y)) +
@@ -103,10 +100,10 @@ bool TFLogger::ignoreTransform(const geometry_msgs::TransformStamped &ts0)
 		return false;
 	}
 	// tests whether angular distance exceeds threshold
-	const geometry_msgs::Quaternion &rot0 = ts0.transform.rotation;
-	const geometry_msgs::Quaternion &rot1 = ts1.transform.rotation;
-    tf::Quaternion q1(rot0.x, rot0.y, rot0.z, rot0.w);
-    tf::Quaternion q2(rot1.x, rot1.y, rot1.z, rot1.w);
+	const geometry_msgs::msg::Quaternion &rot0 = ts0.transform.rotation;
+	const geometry_msgs::msg::Quaternion &rot1 = ts1.transform.rotation;
+    tf2::Quaternion q1(rot0.x, rot0.y, rot0.z, rot0.w);
+    tf2::Quaternion q2(rot1.x, rot1.y, rot1.z, rot1.w);
     float angularDistance = 2.0 * fabs(q1.angle(q2));
 	if(angularDistance > angularThreshold_) {
 		return false;
@@ -114,15 +111,14 @@ bool TFLogger::ignoreTransform(const geometry_msgs::TransformStamped &ts0)
 	return true;
 }
 
-void TFLogger::appendTransform(bson_t *ts_doc, const geometry_msgs::TransformStamped &ts)
+void TFLogger::appendTransform(bson_t *ts_doc, const geometry_msgs::msg::TransformStamped &ts)
 {
 	bson_t child, child2;
 	// append header
 	BSON_APPEND_DOCUMENT_BEGIN(ts_doc, "header", &child); {
 		unsigned long long time = (unsigned long long)(
-				ts.header.stamp.sec * 1000.0 + ts.header.stamp.nsec / 1000000.0);
+				ts.header.stamp.sec * 1000.0 + ts.header.stamp.nanosec / 1000000.0);
 		//
-		BSON_APPEND_INT32(&child, "seq", ts.header.seq);
 		BSON_APPEND_DATE_TIME(&child, "stamp", time);
 		BSON_APPEND_UTF8(&child, "frame_id", ts.header.frame_id.c_str());
 		bson_append_document_end(ts_doc, &child);

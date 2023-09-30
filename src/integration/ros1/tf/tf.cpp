@@ -4,9 +4,9 @@
 #include <knowrob/ros/tf/publisher.h>
 #include <knowrob/ros/tf/republisher.h>
 
-static ros::NodeHandle node;
+static std::shared_ptr<rclcpp::Node> node = std::make_shared<rclcpp::Node>("tf_knowrob");
 static TFMemory memory;
-static TFPublisher pub(memory);
+static TFPublisher pub(node.get(), memory);
 static TFLogger *tf_logger=NULL;
 
 // TF logger parameter
@@ -16,7 +16,7 @@ double time_threshold=-1.0;
 std::string logger_db_name="roslog";
 
 TFRepublisher& get_republisher() {
-	static TFRepublisher republisher;
+	static TFRepublisher republisher(node.get());
 	return republisher;
 }
 
@@ -68,7 +68,7 @@ PREDICATE(tf_logger_enable, 0) {
 		delete tf_logger;
 	}
 
-	tf_logger = new TFLogger(node,memory);
+	tf_logger = new TFLogger(node.get(),memory);
 	tf_logger->set_db_name(logger_db_name);
 	tf_logger->set_time_threshold(time_threshold);
 	tf_logger->set_vectorial_threshold(vectorial_threshold);
@@ -159,7 +159,7 @@ PREDICATE(tf_mem_get_pose, 3) {
 PREDICATE(tf_mng_store, 3) {
 	std::string frame((char*)PL_A1);
 	double stamp = (double)PL_A3;
-	geometry_msgs::TransformStamped ts;
+	geometry_msgs::msg::TransformStamped ts;
 	memory.create_transform(&ts,frame,PL_A2,stamp);
 	if(tf_logger) {
 		tf_logger->store(ts);

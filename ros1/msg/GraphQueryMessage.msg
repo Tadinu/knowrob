@@ -24,12 +24,12 @@ string lang # Default: LANG_FOL
 # in this message.
 # The query must by valid expression in the language configured
 # via the "lang" field.
-string queryString
+string query_string
 
 # Determines the epistemic modality which is concerned
 # with distinguishing knowledge (certain) from belief (uncertain).
 # Defaults to KNOWLEDGE modality.
-uint8 epistemicOperator # Default: KNOWLEDGE
+uint8 epistemic_operator # Default: KNOWLEDGE
 
 # The IRI of another agent (i.e. not the controlled agent).
 # Used to query whether another agent might has some knowledge
@@ -39,7 +39,7 @@ uint8 epistemicOperator # Default: KNOWLEDGE
 # Defaults to empty string indicating that the query is about
 # the agent's own knowledge or belief.
 # Cannot be set in parallel with the aboutSimulationIRI parameter
-string aboutAgentIRI # Default: ""
+string about_agent_iri # Default: ""
 
 # The IRI to an KG of a mental simulation. 
 # The IRI will be returned as the output of an MentalSimulation
@@ -48,20 +48,20 @@ string aboutAgentIRI # Default: ""
 # Defaults to empty string indicating that the query is about
 # the agen'ts own knowledge or beliefstate.
 # Cannot be set in parallel with the aboutAgenIRI parameter
-string aboutSimulationIRI # Default: ""
+string about_simulation_iri # Default: ""
 
 # Determines the temporal modality of the query.
 # Temporal modalities are used to cope with characteristics
 # that change over time.
-uint8 temporalOperator # Default: CURRENTLY
+uint8 temporal_operator # Default: CURRENTLY
 
 # The time interval considered by the past operator can be constrained
 # by min/max timestamp parameters.
 # If minPastTimestamp>0, then statements are only considered that are
 # true after the time indicated by minPastTimestamp. Similarly for maxPastTimestamp.
 # It is also allowed to set only one of the fields to a positive value.
-float64 minPastTimestamp # Default: UNSPECIFIED_TIMESTAMP
-float64 maxPastTimestamp # Default: UNSPECIFIED_TIMESTAMP
+float64 min_past_timestamp # Default: UNSPECIFIED_TIMESTAMP
+float64 max_past_timestamp # Default: UNSPECIFIED_TIMESTAMP
 
 # The minimal confidence of the statement
 float64 confidence # Default: 0.0

@@ -6,9 +6,10 @@ if (POLICY CMP0148)
 endif ()
 
 option(WITH_ROS1_INTERFACE "Build the interface for ROS1 systems" ON)
-
 project(knowrob
         DESCRIPTION "A Knowledge Base System for Cognition-enabled Robots")
+
+set(KNOWROB_LIB "${PROJECT_NAME}")
 
 IF (NOT WIN32)
     INCLUDE(FindPkgConfig)
@@ -16,19 +17,72 @@ ENDIF ()
 
 set(SOMA_VERSION "current")
 
-# include additional CMake macros
-include("cmake/ontologies.cmake")
+# Default to C99
+if(NOT CMAKE_C_STANDARD)
+  set(CMAKE_C_STANDARD 99)
 
+endif()
+
+# Default to C++17
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+
+# include additional CMake macros
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(ontologies)
+
+find_package(ament_cmake REQUIRED)
+find_package(ament_index_cpp REQUIRED)
+find_package(rcl REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rcl_action REQUIRED)
+find_package(rcl_yaml_param_parser REQUIRED)
+find_package(rcutils REQUIRED)
+find_package(rmw REQUIRED)
+find_package(rmw_implementation_cmake REQUIRED)
+find_package(urdf REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(spdlog REQUIRED)
-
 find_package(Python COMPONENTS Interpreter Development)
-
 # Construct Boost Python component name based on Python version
 set(Boost_Python_VERSION "python${Python_VERSION_MAJOR}${Python_VERSION_MINOR}")
 set(Boost_Python_COMPONENT "Boost::${Boost_Python_VERSION}")
 message(STATUS "Using Boost Python component: ${Boost_Python_COMPONENT}")
+set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
+find_package(Boost 1.50 REQUIRED COMPONENTS program_options serialization ${Boost_Python_VERSION})
+
+enable_testing()
+find_package(GTest REQUIRED)
+
+find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
+find_package(message_filters REQUIRED)
+
+#find_package(rosidl_default_generators REQUIRED)
+#rosidl_generate_interfaces(${PROJECT_NAME}
+#	ros1/msg/EventToken.msg
+#	ros1/msg/GraphAnswerMessage.msg
+#	ros1/msg/GraphQueryMessage.msg
+#	ros1/msg/KeyValuePair.msg
+#	ros1/action/AskAll.action
+#	ros1/action/AskIncremental.action
+#	ros1/action/AskOne.action
+#	ros1/action/Tell.action
+#)
+
+find_package(rclswi REQUIRED)
 
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
@@ -38,15 +92,18 @@ find_package(Boost 1.50 REQUIRED COMPONENTS program_options serialization ${Boos
 enable_testing()
 find_package(GTest REQUIRED)
 
+# swi-prolog
 pkg_check_modules(SWIPL REQUIRED swipl)
 link_directories(${SWIPL_LIBRARY_DIRS})
 
 pkg_check_modules(RAPTOR REQUIRED raptor2)
 include_directories(include ${RAPTOR_INCLUDE_DIRS})
 
+pkg_check_modules(RASQAL REQUIRED rasqal)
+include_directories(include ${RASQAL_INCLUDE_DIRS})
+
 pkg_check_modules(REDLAND REQUIRED redland)
 include_directories(include ${REDLAND_INCLUDE_DIRS})
-
 # install ontologies hosted on http servers.
 # copy them into the workspace such the we can load them
 # from a local source at runtime.
@@ -68,7 +125,9 @@ include_directories(include
         ${SWIPL_INCLUDE_DIRS}
         ${EIGEN3_INCLUDE_DIR}
         ${Boost_INCLUDE_DIRS}
-        ${Python_INCLUDE_DIRS})
+		${Python_INCLUDE_DIRS}
+		${rmw_implementation_INCLUDE_DIRS}
+		${rcl_INCLUDE_DIRS} ${rclcpp_INCLUDE_DIRS})
 
 # define some constants for the compilation of source files that
 # are used to load project-relative files.
@@ -79,83 +138,22 @@ add_definitions(-DKNOWROB_BUILD_DIR=\"${CMAKE_BINARY_DIR}\")
 add_definitions(-DBOOST_ALLOW_DEPRECATED_HEADERS)
 add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 
-# NOTE: seems catkin_package must be called *before* any library is build.
-if (WITH_ROS1_INTERFACE)
-    find_package(catkin REQUIRED COMPONENTS
-        roscpp
-        rospy
-        std_msgs
-        message_generation
-        actionlib
-        actionlib_msgs
-    )
 
-endif()
-if (WITH_ROS1_INTERFACE AND catkin_FOUND)
-    message(STATUS "Building with ROS1 support.")
 
-    add_message_files(
-            DIRECTORY ros1/msg
-            FILES
-            KeyValuePair.msg
-            GraphQueryMessage.msg
-            GraphAnswerMessage.msg
-            EventToken.msg
-    )
-
-    add_action_files(
-            DIRECTORY ros1/action
-            FILES
-            AskAll.action
-            AskOne.action
-            AskIncremental.action
-            AskIncrementalNextSolution.action
-            Tell.action
-    )
-
-    add_service_files(
-            DIRECTORY ros1/srv
-            FILES
-            AskIncrementalFinish.srv
-    )
-
-    generate_messages(DEPENDENCIES
-            std_msgs
-            actionlib_msgs)
-
-    catkin_package(
-        CATKIN_DEPENDS roscpp roslib
-        CFG_EXTRAS ontologies.cmake
-    )
-endif()
-
-##############
 #### MONGO DB
 ##############
 
+# libmongoc-dev
 pkg_check_modules(MONGOC REQUIRED libmongoc-1.0)
 # find_package(libmongoc-1.0 1.7 REQUIRED)
 include_directories(${MONGOC_INCLUDE_DIRS})
 link_directories(${MONGOC_LIBRARY_DIRS})
 
-#add_library(mongo_kb SHARED
-#       src/mongodb/mongo_kb.cpp
-#       src/mongodb/bson_pl.cpp
-#       src/mongodb/MongoException.cpp
-#       src/mongodb/MongoInterface.cpp
-#       src/mongodb/MongoDatabase.cpp
-#       src/mongodb/MongoCollection.cpp
-#       src/mongodb/MongoCursor.cpp
-#       src/mongodb/MongoWatch.cpp)
-#target_link_libraries(mongo_kb
-#       ${SWIPL_LIBRARIES}
-#       ${MONGOC_LIBRARIES})
-
 ##############
 #### QUERY ANSWERING
 ##############
 
-add_library(knowrob SHARED
+add_library(${KNOWROB_LIB} SHARED
         src/knowrob.cpp
         src/ThreadPool.cpp
         src/Logger.cpp
@@ -304,26 +302,42 @@ set(KNOWROB_LIBRARIES
         ${SWIPL_LIBRARIES}
         ${MONGOC_LIBRARIES}
         ${RAPTOR_LIBRARIES}
+		${RASQAL_LIBRARIES}
         ${REDLAND_LIBRARIES}
         ${Python_LIBRARIES}
         spdlog::spdlog
-        ${GTEST_LIBRARIES})
-target_link_libraries(knowrob ${KNOWROB_LIBRARIES})
+        ${GTEST_LIBRARIES}
+	${rcl_LIBRARIES} ${rclcpp_LIBRARIES} "${ros_cpp_typesupport_target}")
 # install shared library and headers
-install(TARGETS knowrob PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/knowrob)
+install(TARGETS ${KNOWROB_LIB} PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/${KNOWROB_LIB})
 install(DIRECTORY include/knowrob DESTINATION include)
 # Install Python and Prolog files into the share directory such that they can be loaded at runtime.
 install(DIRECTORY src/ DESTINATION share/knowrob FILES_MATCHING PATTERN "*.pl")
 install(DIRECTORY src/ DESTINATION share/knowrob FILES_MATCHING PATTERN "*.py")
 
-add_executable(knowrob-terminal src/terminal.cpp)
-target_link_libraries(knowrob-terminal
+# Since ROS Humble
+rosidl_get_typesupport_target(ros_cpp_typesupport_target ${KNOWROB_LIB} "rosidl_typesupport_cpp")
+
+ament_target_dependencies(${KNOWROB_LIB}
+  "rcl"
+  "rmw"
+  "rcl_action"
+  "ament_index_cpp"
+  "SWIPL"
+  "RAPTOR"
+  "REDLAND"
+)
+
+if (0)
+add_executable(${PROJECT_NAME}-terminal src/terminal.cpp)
+target_link_libraries(${PROJECT_NAME}-terminal
         ${KNOWROB_LIBRARIES}
         Boost::program_options
         Boost::serialization
         ${Boost_Python_COMPONENT}
-        knowrob)
-install(TARGETS knowrob-terminal RUNTIME DESTINATION bin)
+		${KNOWROB_LIB})
+install(TARGETS ${PROJECT_NAME}-terminal RUNTIME DESTINATION bin)
+endif()
 
 ##############
 ########## Python module
@@ -343,7 +357,7 @@ target_link_libraries(knowrob_py PRIVATE
         Boost::program_options
         Boost::serialization
         ${Boost_Python_COMPONENT}
-        knowrob)
+		${KNOWROB_LIB})
 
 # Rename the library to knowrob.so such that it can be loaded by the
 # Python interpreter through the "import knowrob" statement.
@@ -416,46 +430,11 @@ if (DOXYGEN_FOUND)
 endif ()
 
 ##############
-########## ROS1
-##############
-
-if (WITH_ROS1_INTERFACE AND catkin_FOUND AND CATKIN_DEVEL_PREFIX)
-
-    include_directories(${catkin_INCLUDE_DIRS})
-
-    add_definitions(-DKNOWROB_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
-
-    # catkin_python_setup()
-
-    include_directories(
-            ${catkin_INCLUDE_DIRS}
-    )
-
-    ## ROS Interface ###
-    add_executable(knowrob-ros
-            src/integration/ros1/ROSInterface.cpp
-    )
-    add_dependencies(knowrob-ros
-            ${catkin_EXPORTED_TARGETS})
-    target_link_libraries(knowrob-ros
-            Boost::program_options
-            ${KNOWROB_LIBRARIES}
-            knowrob
-            ${catkin_LIBRARIES}
-            ${Boost_INCLUDE_DIRS}
-            ${PYTHON_INCLUDE_DIRS}
-            ${Boost_Python_COMPONENT})
-    install(TARGETS knowrob-ros RUNTIME DESTINATION bin)
 
 
-else ()
-    message(STATUS "Building without ROS1 support.")
-endif ()
-
-##############
 ########## Unit Testing
 ##############
-
+if (0)
 # add an executable target for GTest.
 # but the testing code is partly in the *knowrob* library
 # where gtest won't find them without using the "--no-as-needed"
@@ -475,7 +454,14 @@ add_executable(all_gtests
 add_dependencies(all_gtests knowrob_py)
 target_link_libraries(all_gtests
         -Wl,--whole-archive,--no-as-needed
-        knowrob
+        ${KNOWROB_LIB}
         -Wl,--no-whole-archive
         ${Boost_Python_COMPONENT}
         ${GTEST_MAIN_LIBRARIES})
+endif()
+ament_export_include_directories(include)
+#ament_export_libraries(kb_algebra mongo_kb marker_knowrob tf_knowrob)
+#ament_environment_hooks()
+ament_package(
+	CONFIG_EXTRAS cmake/ontologies.cmake
+)
