@@ -67,8 +67,7 @@ namespace knowrob {
 		std::shared_ptr<NamedReasoner>
 		addPlugin(std::string_view reasonerID, const std::shared_ptr<Reasoner> &reasoner) override;
 
-	private:
-		KnowledgeBase *kb_;
+	private:KnowledgeBase *kb_;
 		std::shared_ptr<StorageManager> backendManager_;
 		// maps reasoner to their backends
 		std::map<std::string_view, StoragePtr, std::less<>> reasonerBackends_;

@@ -80,8 +80,5 @@ namespace knowrob {
 namespace knowrob::py {
 	template<>
 	void createType<Disjunction>() {
-		using namespace boost::python;
-		class_<Disjunction, std::shared_ptr<Disjunction>, bases<CompoundFormula>>
-				("Disjunction", init<const std::vector<FormulaPtr> &>());
 	}
 }

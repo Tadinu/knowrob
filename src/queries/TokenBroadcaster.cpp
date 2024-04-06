@@ -49,10 +49,5 @@ namespace knowrob {
 namespace knowrob::py {
 	template<>
 	void createType<TokenBroadcaster>() {
-		using namespace boost::python;
-		class_<TokenBroadcaster, std::shared_ptr<TokenBroadcaster>, bases<TokenStream>, boost::noncopyable>
-				("TokenBroadcaster", init<>())
-				.def("addSubscriber", &TokenBroadcaster::addSubscriber)
-				.def("removeSubscriber", &TokenBroadcaster::removeSubscriber);
 	}
 }

@@ -19,10 +19,10 @@ namespace knowrob {
 	class FramedTriple {
 	public:
 		explicit FramedTriple()
-				: xsdType_(std::nullopt), isUncertain_(false), isOccasional_(false) {}
+				: isOccasional_(false), isUncertain_(false), xsdType_(std::nullopt) {}
 
 		explicit FramedTriple(XSDType xsdType)
-				: xsdType_(xsdType), isUncertain_(false), isOccasional_(false) {}
+				: isOccasional_(false), isUncertain_(false), xsdType_(xsdType) {}
 
 		virtual ~FramedTriple() = default;
 

@@ -77,8 +77,7 @@ namespace knowrob::mongo {
 		 */
 		const auto *query() const { return query_; }
 
-	private:
-		std::shared_ptr<Collection> collection_;
+	private:std::shared_ptr<Collection> collection_;
 		mongoc_cursor_t *cursor_;
 		bson_t *query_;
 		bson_t *opts_;

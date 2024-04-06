@@ -14,6 +14,11 @@
 namespace knowrob {
 	using DataSourceLoader = std::function<bool(const DataSourcePtr &)>;
 
+	enum DataSourceHandlerType
+	{
+		ReasonerHandler,
+		StorageHandler
+	};
 	/**
 	 * An object that can load data sources.
 	 */
@@ -41,8 +46,9 @@ namespace knowrob {
 		 */
 		bool hasDataHandler(const DataSourcePtr &dataSource) const;
 
-
+		DataSourceHandlerType handlerType() { return handler_type_; }
 	protected:
+		DataSourceHandlerType handler_type_ = DataSourceHandlerType::ReasonerHandler;
 		std::map<std::string, DataSourceLoader> dataSourceHandler_;
 
 		virtual bool loadDataSourceWithUnknownFormat(const DataSourcePtr &) { return false; }

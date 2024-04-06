@@ -19,7 +19,7 @@ namespace knowrob {
 	 */
 	class GoalDrivenReasoner : public Reasoner {
 	public:
-		GoalDrivenReasoner() : Reasoner() {}
+		GoalDrivenReasoner() : Reasoner(PluginType::GoalDriven) {}
 
 		/**
 		 * Find out if the relation is defined by this reasoner.

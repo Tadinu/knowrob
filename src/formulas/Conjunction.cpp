@@ -58,8 +58,5 @@ namespace knowrob {
 namespace knowrob::py {
 	template<>
 	void createType<Conjunction>() {
-		using namespace boost::python;
-		class_<Conjunction, std::shared_ptr<Conjunction>, bases<CompoundFormula>>
-				("Conjunction", init<const std::vector<FormulaPtr> &>());
 	}
 }

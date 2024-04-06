@@ -24,6 +24,7 @@ namespace knowrob {
 		 * @param format string identifier of the data format.
 		 */
 		OntologyFile(VocabularyPtr vocabulary, const URI &uri, std::string_view format);
+		virtual ~OntologyFile() {}
 
 		/**
 		 * @return the format of the triples in the file.

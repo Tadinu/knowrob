@@ -39,10 +39,6 @@ void CompoundFormula::write(std::ostream &os) const {
 
 namespace knowrob::py {
 	template<>
-	void createType<CompoundFormula>() {
-		using namespace boost::python;
-		class_<CompoundFormula, std::shared_ptr<CompoundFormula>, boost::noncopyable, bases<Formula>>
-				("CompoundFormula", no_init)
-				.def("formulae", &CompoundFormula::formulae, return_value_policy<copy_const_reference>());
+	void createType<CompoundFormula>(){
 	}
 }

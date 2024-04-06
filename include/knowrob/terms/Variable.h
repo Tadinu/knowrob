@@ -23,6 +23,7 @@ namespace knowrob {
 		 * @name the name of the variable.
 		 */
 		explicit Variable(std::string_view name);
+		virtual ~Variable(){}
 
 		/**
 		 * @param other another variable.

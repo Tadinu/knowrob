@@ -48,21 +48,5 @@ std::ostream &std::operator<<(std::ostream &os, const knowrob::TokenPtr &tok) {
 namespace knowrob::py {
 	template<>
 	void createType<Token>() {
-		using namespace boost::python;
-		enum_<TokenType>("TokenType")
-				.value("CONTROL_TOKEN", TokenType::CONTROL_TOKEN)
-				.value("ANSWER_TOKEN", TokenType::ANSWER_TOKEN)
-				.export_values();
-		class_<Token, std::shared_ptr<Token>, boost::noncopyable>
-				("Token", no_init)
-				.def("__repr__", &Token::stringForm)
-				.def("__hash__", &Token::hash)
-				.def("tokenType", &Token::tokenType)
-				.def("indicatesEndOfEvaluation", &Token::indicatesEndOfEvaluation);
-		class_<EndOfEvaluation, bases<Token>, std::shared_ptr<EndOfEvaluation>>
-				("EndOfEvaluation", no_init)
-				.def("get", &EndOfEvaluation::get, return_value_policy<reference_existing_object>())
-				.staticmethod("get");
-		createType<Answer>();
 	}
 }

@@ -95,23 +95,5 @@ namespace knowrob {
 namespace knowrob::py {
 	template<>
 	void createType<XSDAtomic>() {
-		using namespace boost::python;
-		enum_<XSDType>("XSDType")
-				.value("STRING", XSDType::STRING)
-				.value("BOOLEAN", XSDType::BOOLEAN)
-				.value("DOUBLE", XSDType::DOUBLE)
-				.value("FLOAT", XSDType::FLOAT)
-				.value("INTEGER", XSDType::INTEGER)
-				.value("LONG", XSDType::LONG)
-				.value("SHORT", XSDType::SHORT)
-				.value("UNSIGNED_LONG", XSDType::UNSIGNED_LONG)
-				.value("UNSIGNED_INT", XSDType::UNSIGNED_INT)
-				.value("UNSIGNED_SHORT", XSDType::UNSIGNED_SHORT)
-				.export_values();
-		class_<XSDAtomic, std::shared_ptr<XSDAtomic>, bases<Atomic, RDFNode>, boost::noncopyable>
-				("XSDAtomic", no_init)
-				.def("xsdTypeIRI", &XSDAtomic::xsdTypeIRI)
-				.def("xsdType", &XSDAtomic::xsdType)
-				.def("create", &XSDAtomic::create);
 	}
 }

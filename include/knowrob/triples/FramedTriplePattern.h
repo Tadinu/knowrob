@@ -48,7 +48,7 @@ namespace knowrob {
 		 * @param isNegated a value of true refers to the statement being false.
 		 */
 		explicit FramedTriplePattern(const FramedTriple &triple, bool isNegated = false);
-
+		virtual ~FramedTriplePattern() {}
 		/**
 		 * @param predicate a predicate with two arguments.
 		 * @param isNegated a value of true refers to the statement being false.

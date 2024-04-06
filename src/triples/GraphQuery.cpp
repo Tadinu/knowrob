@@ -94,17 +94,5 @@ void GraphQuery::write(std::ostream &os) const {
 namespace knowrob::py {
 	template<>
 	void createType<GraphQuery>() {
-		using namespace boost::python;
-
-		createType<GraphTerm>();
-
-		class_<GraphQuery, std::shared_ptr<GraphQuery>, boost::noncopyable>
-		        ("GraphQuery", init<const std::shared_ptr<GraphTerm> &>())
-		        .def(init<const std::shared_ptr<GraphTerm> &, const QueryContextPtr &>())
-		        .def(init<const FramedTriplePatternPtr &>())
-		        .def(init<const FramedTriplePatternPtr &, const QueryContextPtr &>())
-		        .def(init<const std::vector<FramedTriplePatternPtr> &, const QueryContextPtr &>())
-				.def("term", &GraphQuery::term)
-				.def("toFormula", &GraphQuery::toFormula);
 	}
 }

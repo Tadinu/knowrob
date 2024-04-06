@@ -3,7 +3,7 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <gtest/gtest.h>
+
 #include <knowrob/queries/ConjunctiveBroadcaster.h>
 #include "knowrob/queries/TokenQueue.h"
 #include "knowrob/queries/AnswerYes.h"

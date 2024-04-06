@@ -161,24 +161,5 @@ namespace knowrob {
 namespace knowrob::py {
 	template<>
 	void createType<Answer>() {
-		using namespace boost::python;
-		class_<Answer, bases<Token>, std::shared_ptr<Answer>, boost::noncopyable>
-				("Answer", no_init)
-				.def("isPositive", &Answer::isPositive)
-				.def("isNegative", &Answer::isNegative)
-				.def("isCertain", &Answer::isCertain)
-				.def("isUncertain", &Answer::isUncertain)
-				.def("isOccasionallyTrue", &Answer::isOccasionallyTrue)
-				.def("setIsOccasionallyTrue", &Answer::setIsOccasionallyTrue)
-				.def("setIsUncertain", &Answer::setIsUncertain)
-				.def("setFrame", &Answer::setFrame)
-				.def("frame", &Answer::frame, return_value_policy<reference_existing_object>())
-				.def("reasonerTerm", &Answer::reasonerTerm, return_value_policy<reference_existing_object>())
-				.def("hashOfAnswer", &Answer::hashOfAnswer)
-				.def("stringFormOfAnswer", &Answer::stringFormOfAnswer)
-				.def("humanReadableForm", &Answer::humanReadableForm);
-		createType<AnswerYes>();
-		createType<AnswerNo>();
-		createType<AnswerDontKnow>();
 	}
 }

@@ -76,37 +76,4 @@ static inline void register_triple_types() {
 	boost::python::class_<TripleList>("TripleList").def(boost::python::vector_indexing_suite<TripleList, true>());
 }
 
-BOOST_PYTHON_MODULE (MODULENAME) {
-	using namespace boost::python;
-	using namespace knowrob::py;
-
-	// convert std::string_view to python::str and vice versa.
-	register_string_view_converter();
-
-	/////////////////////////////////////////////////////
-	// mappings for KnowRob types
-	/////////////////////////////////////////////////////
-	register_common_types();
-	register_term_types();
-	register_formula_types();
-	register_triple_types();
-
-	createType<TokenStream>();
-	createType<QueryContext>();
-	createType<QueryParser>();
-	createType<DataSource>();
-	createType<DataSourceHandler>();
-	createType<Storage>();
-	createType<Reasoner>();
-	createType<KnowledgeBase>();
-
-	/////////////////////////////////////////////////////
-	// mappings for optionals used in the structs above
-	/////////////////////////////////////////////////////
-	// Note: At the moment each optional must be listed individually in the module declaration.
-	//       It would be nice if this could be avoided...
-	python_optional<XSDType>();
-	python_optional<std::string_view>();
-	python_optional<double>();
-	python_optional<PerspectivePtr>();
-}
+BOOST_PYTHON_MODULE (knowrob) {}

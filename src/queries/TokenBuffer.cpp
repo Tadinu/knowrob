@@ -41,10 +41,5 @@ void TokenBuffer::push(const TokenPtr &tok) {
 namespace knowrob::py {
 	template<>
 	void createType<TokenBuffer>() {
-		using namespace boost::python;
-		class_<TokenBuffer, std::shared_ptr<TokenBuffer>, bases<TokenBroadcaster>, boost::noncopyable>
-				("TokenBuffer", init<>())
-				.def("stopBuffering", &TokenBuffer::stopBuffering)
-				.def("createQueue", &TokenBuffer::createQueue);
 	}
 }

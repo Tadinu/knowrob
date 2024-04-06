@@ -99,7 +99,7 @@ namespace knowrob {
 		 * @param numericForm the numeric form of the term
 		 */
 		explicit NumericTemplate(T1 numericForm) : Numeric(T2), numericForm_(numericForm) {}
-
+		virtual ~NumericTemplate(){}
 		/**
 		 * @param stringForm the string form of the term
 		 */
@@ -166,8 +166,7 @@ namespace knowrob {
 			return numericForm() == otherNumeric->numericForm();
 		}
 
-	private:
-		// Note: both are mutable because they are initialized in a lazy fashion
+	private:// Note: both are mutable because they are initialized in a lazy fashion
 		mutable std::optional<std::string> stringForm_;
 		mutable std::optional<T1> numericForm_;
 

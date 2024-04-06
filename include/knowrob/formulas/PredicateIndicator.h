@@ -60,8 +60,7 @@ namespace knowrob {
 
 		void write(std::ostream &os) const;
 
-	private:
-		const AtomPtr functor_;
+	private:const AtomPtr functor_;
 		const uint32_t arity_;
 	};
 

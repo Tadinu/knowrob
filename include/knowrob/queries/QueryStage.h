@@ -73,7 +73,7 @@ namespace knowrob {
 			std::mutex pushLock_;
 
 			explicit Pusher(std::shared_ptr<QueryStage> stage);
-
+			virtual ~Pusher(){}
 			void push(const TokenPtr &tok) override;
 
 			void close() override;

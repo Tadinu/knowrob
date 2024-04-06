@@ -18,6 +18,11 @@ namespace knowrob {
 	// forward declaration
 	class ReasonerManager;
 
+	enum PluginType {
+		DataDriven,
+		GoalDriven
+	};
+
 	/**
 	 * A reasoner is a component that can infer new knowledge.
 	 * The inference process may refer to extensional data which is stored in a DataBackend.
@@ -26,7 +31,10 @@ namespace knowrob {
 	 */
 	class Reasoner : public DataSourceHandler {
 	public:
-		Reasoner() : reasonerManager_(nullptr) {}
+		Reasoner(const PluginType type = DataDriven) : type_(type), reasonerManager_(nullptr)
+		{
+			handler_type_ = DataSourceHandlerType::ReasonerHandler;
+		}
 
 		virtual ~Reasoner() = default;
 
@@ -57,6 +65,9 @@ namespace knowrob {
 		 */
 		virtual bool initializeReasoner(const PropertyTree &ptree) = 0;
 
+		PluginType type() { return type_; }
+	protected:
+		PluginType type_ = PluginType::DataDriven;
 	private:
 		AtomPtr t_reasonerName_;
 		ReasonerManager *reasonerManager_;

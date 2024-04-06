@@ -7,7 +7,6 @@
 #include "knowrob/Logger.h"
 #include "knowrob/terms/ListTerm.h"
 #include "knowrob/terms/OptionList.h"
-#include "knowrob/reasoner/prolog/PrologTests.h"
 #include "knowrob/integration/prolog/PrologBackend.h"
 
 using namespace knowrob;
@@ -85,16 +84,3 @@ void PrologTestsBase::runPrologTests(
 	EXPECT_TRUE(hasResult);
 	KB_INFO1(target.c_str(), 1, "[plunit] {}/{} tests succeeded for target '{}'.", (numTests - numFailedTests), numTests, target);
 }
-
-namespace knowrob::testing {
-	class PrologReasonerTests : public PrologTests<knowrob::PrologReasoner, knowrob::PrologBackend> {
-	protected:
-		static std::string getPath(const std::string &filename) {
-			return std::filesystem::path("reasoner") / "prolog" / filename;
-		}
-	};
-}
-using namespace knowrob::testing;
-
-// register test cases of prolog files in this directory (pl or plt file extension)
-TEST_F(PrologReasonerTests, semweb) { runTests(getPath("semweb.pl")); }

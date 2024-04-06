@@ -21,8 +21,8 @@ Collection::Collection(
 		std::string_view databaseName,
 		std::string_view collectionName)
 		: connection_(connection),
-		  name_(collectionName),
 		  dbName_(databaseName),
+          name_(collectionName),
 		  session_(nullptr) {
 	client_ = mongoc_client_pool_pop(connection_->pool_);
 	coll_ = mongoc_client_get_collection(client_, dbName_.c_str(), name_.c_str());

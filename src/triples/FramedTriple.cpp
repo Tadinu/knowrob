@@ -368,85 +368,42 @@ namespace std {
 
 namespace knowrob::py {
 	// this struct is needed because FramedTriple has pure virtual methods
-	struct FramedTripleWrap : public FramedTriple, boost::python::wrapper<FramedTriple> {
-		explicit FramedTripleWrap(PyObject *p) : self(p), FramedTriple() {}
+	struct FramedTripleWrap : public FramedTriple {
+		explicit FramedTripleWrap() : FramedTriple() {}
 
-		void setSubject(std::string_view subject) override { call_method<void>(self, "setSubject", subject); }
+		void setSubject(std::string_view subject) override {  }
 
-		void setPredicate(std::string_view predicate) override { call_method<void>(self, "setPredicate", predicate); }
+		void setPredicate(std::string_view predicate) override {  }
 
-		void setObjectIRI(std::string_view object) override { call_method<void>(self, "setObjectIRI", object); }
+		void setObjectIRI(std::string_view object) override {  }
 
-		void setSubjectBlank(std::string_view str) override { call_method<void>(self, "setSubjectBlank", str); }
+		void setSubjectBlank(std::string_view str) override {  }
 
-		void setObjectBlank(std::string_view str) override { call_method<void>(self, "setObjectBlank", str); }
+		void setObjectBlank(std::string_view str) override {  }
 
-		std::string_view subject() const override { return call_method<std::string_view>(self, "subject"); }
+		std::string_view subject() const override { return std::string_view(); }
 
-		std::string_view predicate() const override { return call_method<std::string_view>(self, "predicate"); }
+		std::string_view predicate() const override { return std::string_view(); }
 
-		void setGraph(std::string_view graph) override { call_method<void>(self, "setGraph", graph); }
+		void setGraph(std::string_view graph) override { }
 
-		void setPerspective(std::string_view perspective) override { call_method<void>(self, "setPerspective", perspective); }
+		void setPerspective(std::string_view perspective) override { }
 
 		std::optional<std::string_view> graph() const override {
-			return call_method<std::optional<std::string_view>>(self, "graph");
+			return std::optional<std::string_view>();
 		}
 
 		std::optional<std::string_view> perspective() const override {
-			return call_method<std::optional<std::string_view>>(self, "perspective");
+			return std::optional<std::string_view>();
 		}
 
-		std::string_view valueAsString() const override { return call_method<std::string_view>(self, "valueAsString"); }
+		std::string_view valueAsString() const override { return std::string_view(); }
 
 	private:
-		PyObject *self;
+
 	};
 
 	template<>
 	void createType<FramedTriple>() {
-		using namespace boost::python;
-		class_<FramedTriple, std::shared_ptr<FramedTripleWrap>, boost::noncopyable>
-				("FramedTriple", no_init)
-				.def("__eq__", &FramedTriple::operator==)
-				.def("isObjectIRI", &FramedTriple::isObjectIRI)
-				.def("isSubjectIRI", &FramedTriple::isSubjectIRI)
-				.def("isObjectBlank", &FramedTriple::isObjectBlank)
-				.def("isSubjectBlank", &FramedTriple::isSubjectBlank)
-				.def("isXSDLiteral", &FramedTriple::isXSDLiteral)
-				.def("setSubject", pure_virtual(&FramedTriple::setSubject))
-				.def("setPredicate", pure_virtual(&FramedTriple::setPredicate))
-				.def("setSubjectBlank", pure_virtual(&FramedTriple::setSubjectBlank))
-				.def("setObjectIRI", pure_virtual(&FramedTriple::setObjectIRI))
-				.def("setObjectBlank", pure_virtual(&FramedTriple::setObjectBlank))
-				.def("valueAsString", pure_virtual(&FramedTriple::valueAsString))
-				.def("createStringValue", &FramedTriple::createStringValue)
-				.def("setXSDValue", &FramedTriple::setXSDValue)
-				.def("xsdTypeIRI", &FramedTriple::xsdTypeIRI)
-				.def("setGraph", pure_virtual(&FramedTriple::setGraph))
-				.def("setPerspective", pure_virtual(&FramedTriple::setPerspective))
-				.def("setIsOccasional", &FramedTriple::setIsOccasional)
-				.def("setIsUncertain", &FramedTriple::setIsUncertain)
-				.def("setBegin", &FramedTriple::setBegin)
-				.def("setEnd", &FramedTriple::setEnd)
-				.def("setConfidence", &FramedTriple::setConfidence)
-				.def("xsdType", &FramedTriple::xsdType)
-				.def("subject", pure_virtual(&FramedTriple::subject))
-				.def("predicate", pure_virtual(&FramedTriple::predicate))
-				.def("graph", pure_virtual(&FramedTriple::graph))
-				.def("perspective", pure_virtual(&FramedTriple::perspective))
-				.def("isOccasional", &FramedTriple::isOccasional)
-				.def("isUncertain", &FramedTriple::isUncertain)
-				.def("begin", &FramedTriple::begin)
-				.def("end", &FramedTriple::end)
-				.def("confidence", &FramedTriple::confidence);
-		class_<FramedTripleCopy, std::shared_ptr<FramedTripleCopy>, bases<FramedTriple>>
-				("FramedTripleCopy", init<>())
-				.def(init<std::string_view, std::string_view, std::string_view>());
-		class_<FramedTripleView, std::shared_ptr<FramedTripleView>, bases<FramedTriple>>
-				("FramedTripleView", init<>())
-				.def(init<std::string_view, std::string_view, std::string_view>());
-		class_<FramedTriplePtr>("FramedTriplePtr", init<>())
-				.def("get", &FramedTriplePtr::get, return_value_policy<reference_existing_object>());
 	}
 }

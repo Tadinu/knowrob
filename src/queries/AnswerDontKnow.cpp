@@ -40,10 +40,5 @@ std::string AnswerDontKnow::humanReadableFormOfDontKnow() const {
 namespace knowrob::py {
 	template<>
 	void createType<AnswerDontKnow>() {
-		using namespace boost::python;
-		class_<AnswerDontKnow, bases<Answer>, std::shared_ptr<AnswerDontKnow>, boost::noncopyable>
-				("AnswerDontKnow", init<>())
-				.def("stringFormOfDontKnow", &AnswerDontKnow::stringFormOfDontKnow)
-				.def("humanReadableFormOfDontKnow", &AnswerDontKnow::humanReadableFormOfDontKnow);
 	}
 }

@@ -19,7 +19,7 @@ namespace knowrob {
 
 		explicit GraphUnion(const std::vector<std::shared_ptr<GraphTerm>> &terms)
 				: GraphConnective(GraphTermType::Union, terms) {}
-
+		virtual ~GraphUnion() {}
 		void write(std::ostream &os) const override;
 	};
 } // knowrob

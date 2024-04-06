@@ -25,8 +25,8 @@ namespace knowrob::transaction {
 		Transaction(const std::shared_ptr<QueryableStorage> &queryable,
 					const std::shared_ptr<Vocabulary> &vocabulary,
 					bool isRemoval)
-				: queryable_(queryable),
-				  vocabulary_(vocabulary),
+				: vocabulary_(vocabulary),
+		          queryable_(queryable),
 				  isRemoval_(isRemoval) {}
 
 		/**

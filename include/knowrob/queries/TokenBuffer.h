@@ -19,6 +19,7 @@ namespace knowrob {
 	class TokenBuffer : public TokenBroadcaster {
 	public:
 		TokenBuffer();
+		virtual ~TokenBuffer(){}
 
 		/**
 		 * Stop buffering and forward all buffered tokens to subscribers.

@@ -21,8 +21,7 @@ namespace knowrob {
 		// Override Term
 		void write(std::ostream &os) const override;
 
-	private:
-		Bottom();
+	private:Bottom();
 
 	protected:
 		bool isEqual(const Formula &other) const override;

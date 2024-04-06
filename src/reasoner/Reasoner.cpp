@@ -42,31 +42,21 @@ void Reasoner::pushWork(const std::function<void(void)> &fn) {
 
 namespace knowrob::py {
 	// this struct is needed because Reasoner has pure virtual methods
-	struct ReasonerWrap : public Reasoner, boost::python::wrapper<Reasoner> {
-		explicit ReasonerWrap(PyObject *p) : self(p), Reasoner() {}
+	struct ReasonerWrap : public Reasoner {
+		explicit ReasonerWrap() : Reasoner() {}
 
 		void setDataBackend(const StoragePtr &backend) override {
-			call_method<void>(self, "setDataBackend", backend);
 		}
 
 		bool initializeReasoner(const PropertyTree &config) override {
-			return call_method<bool>(self, "initializeReasoner", config);
+		    return false;
 		}
 
 	private:
-		PyObject *self;
+
 	};
 
 	template<>
 	void createType<Reasoner>() {
-		using namespace boost::python;
-		class_<Reasoner, std::shared_ptr<ReasonerWrap>, bases<DataSourceHandler>, boost::noncopyable>
-				("Reasoner", init<>())
-				.def("pushWork", +[](Reasoner &x, object &fn) { x.pushWork(fn); })
-						// methods that must be implemented by reasoner plugins
-				.def("initializeReasoner", &ReasonerWrap::initializeReasoner)
-				.def("setDataBackend", &ReasonerWrap::setDataBackend);
-		py::createType<DataDrivenReasoner>();
-		py::createType<GoalDrivenReasoner>();
 	}
 }

@@ -23,13 +23,5 @@ namespace knowrob {
 namespace knowrob::py {
 	template<>
 	void createType<RDFNode>() {
-		using namespace boost::python;
-		enum_<RDFNodeType>("RDFNodeType")
-				.value("BLANK", RDFNodeType::BLANK)
-				.value("IRI", RDFNodeType::IRI)
-				.value("LITERAL", RDFNodeType::LITERAL)
-				.export_values();
-		class_<RDFNode, std::shared_ptr<RDFNode>, boost::noncopyable>("RDFNode", no_init)
-				.def("rdfNodeType", &RDFNode::rdfNodeType);
 	}
 }

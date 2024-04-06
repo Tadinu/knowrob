@@ -42,12 +42,5 @@ std::shared_ptr<Perspective> Perspective::get(std::string_view iri) {
 namespace knowrob::py {
 	template<>
 	void createType<Perspective>() {
-		using namespace boost::python;
-		class_<Perspective, std::shared_ptr<Perspective>>("Perspective", no_init)
-				.def("iri", &Perspective::iri)
-				.def("atom", &Perspective::atom)
-				.def("getEgoPerspective", &Perspective::getEgoPerspective)
-				.def("isEgoPerspective", &Perspective::isEgoPerspective)
-				.def("get", &Perspective::get);
 	}
 }

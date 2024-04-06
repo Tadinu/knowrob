@@ -53,34 +53,5 @@ namespace std {
 namespace knowrob::py {
 	template<>
 	void createType<Formula>() {
-		using namespace boost::python;
-		enum_<FormulaType>("FormulaType")
-				.value("PREDICATE", FormulaType::PREDICATE)
-				.value("CONJUNCTION", FormulaType::CONJUNCTION)
-				.value("DISJUNCTION", FormulaType::DISJUNCTION)
-				.value("NEGATION", FormulaType::NEGATION)
-				.value("IMPLICATION", FormulaType::IMPLICATION)
-				.value("MODAL", FormulaType::MODAL)
-				.export_values();
-		class_<Formula, std::shared_ptr<Formula>, boost::noncopyable>
-				("Formula", no_init)
-				.def("type", &Formula::type)
-				.def("__eq__", &Formula::operator==)
-				.def("isGround", &Formula::isGround)
-				.def("isAtomic", &Formula::isAtomic)
-				.def("isTop", &Formula::isTop)
-				.def("isBottom", &Formula::isBottom);
-
-		py::createType<CompoundFormula>();
-		py::createType<Negation>();
-		py::createType<Conjunction>();
-		py::createType<Disjunction>();
-		py::createType<Implication>();
-		py::createType<Predicate>();
-		py::createType<Bottom>();
-		py::createType<Top>();
-		py::createType<ModalFormula>();
-		py::createType<FirstOrderLiteral>();
-		py::createType<PredicateIndicator>();
 	}
 }

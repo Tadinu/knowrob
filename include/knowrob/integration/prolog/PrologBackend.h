@@ -19,6 +19,7 @@ namespace knowrob {
 	class PrologBackend : public QueryableStorage {
 	public:
 		PrologBackend();
+		virtual ~PrologBackend(){}
 
 		bool initializeBackend();
 

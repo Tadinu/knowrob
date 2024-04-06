@@ -13,7 +13,7 @@
 #include <map>
 #include <memory>
 // gtest
-#include <gtest/gtest.h>
+
 // KnowRob
 #include "knowrob/ThreadPool.h"
 #include "knowrob/terms/Term.h"

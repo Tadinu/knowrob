@@ -493,34 +493,5 @@ namespace knowrob {
 namespace knowrob::py {
 	template<>
 	void createType<FramedTriplePattern>() {
-		using namespace boost::python;
-		class_<FramedTriplePattern, std::shared_ptr<FramedTriplePattern>, bases<FirstOrderLiteral>>
-				("FramedTriplePattern", init<const FramedTriple &, bool>())
-				.def(init<const FramedTriple &>())
-				.def("subjectTerm", &FramedTriplePattern::subjectTerm, return_value_policy<return_by_value>())
-				.def("propertyTerm", &FramedTriplePattern::propertyTerm, return_value_policy<return_by_value>())
-				.def("objectTerm", &FramedTriplePattern::objectTerm, return_value_policy<return_by_value>())
-				.def("graphTerm", &FramedTriplePattern::graphTerm, return_value_policy<return_by_value>())
-				.def("perspectiveTerm", &FramedTriplePattern::perspectiveTerm, return_value_policy<return_by_value>())
-				.def("beginTerm", &FramedTriplePattern::beginTerm, return_value_policy<return_by_value>())
-				.def("endTerm", &FramedTriplePattern::endTerm, return_value_policy<return_by_value>())
-				.def("confidenceTerm", &FramedTriplePattern::confidenceTerm, return_value_policy<return_by_value>())
-				.def("objectOperator", &FramedTriplePattern::objectOperator)
-				.def("isOccasionalTerm", &FramedTriplePattern::isOccasionalTerm, return_value_policy<return_by_value>())
-				.def("isUncertainTerm", &FramedTriplePattern::isUncertainTerm, return_value_policy<return_by_value>())
-				.def("setGraphName", &FramedTriplePattern::setGraphName)
-				.def("setPerspectiveTerm", &FramedTriplePattern::setPerspectiveTerm)
-				.def("setBeginTerm", &FramedTriplePattern::setBeginTerm)
-				.def("setEndTerm", &FramedTriplePattern::setEndTerm)
-				.def("setConfidenceTerm", &FramedTriplePattern::setConfidenceTerm)
-				.def("setObjectOperator", &FramedTriplePattern::setObjectOperator)
-				.def("setIsOccasionalTerm", &FramedTriplePattern::setIsOccasionalTerm)
-				.def("setIsUncertainTerm", &FramedTriplePattern::setIsUncertainTerm)
-				.def("filter", &FramedTriplePattern::filter)
-				.def("instantiateInto", &FramedTriplePattern::instantiateInto)
-				.def("getVariables", &FramedTriplePattern::getVariables)
-				.def("numVariables", &FramedTriplePattern::numVariables)
-				.def("getTripleFrame", &FramedTriplePattern::getTripleFrame)
-				.def("setTripleFrame", &FramedTriplePattern::setTripleFrame);
 	}
 }

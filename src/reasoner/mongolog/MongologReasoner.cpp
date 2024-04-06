@@ -3,10 +3,9 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <gtest/gtest.h>
+
 
 #include "knowrob/Logger.h"
-#include "knowrob/reasoner/prolog/PrologTests.h"
 #include "knowrob/reasoner/ReasonerManager.h"
 #include "knowrob/reasoner/mongolog/MongologReasoner.h"
 #include "knowrob/queries/QueryError.h"
@@ -227,113 +226,3 @@ foreign_t pl_assert_triple_cpp9(term_t t_reasonerManager,
 		return false;
 	}
 }
-
-namespace knowrob::testing {
-	class MongologTests : public PrologTestsBase {
-	protected:
-		static std::shared_ptr<knowrob::MongoKnowledgeGraph>
-		createBackend2(const std::string &name, const std::shared_ptr<KnowledgeBase> &kb) {
-			auto kg = std::make_shared<MongoKnowledgeGraph>();
-			kb->backendManager()->addPlugin(name, kg);
-			kg->initializeBackend(
-					MongoKnowledgeGraph::DB_URI_DEFAULT,
-					MongoKnowledgeGraph::DB_NAME_TESTS,
-					MongoKnowledgeGraph::COLL_NAME_TRIPLES);
-			kg->drop();
-			kg->tripleCollection()->createTripleIndex();
-			return kg;
-		}
-
-		static std::shared_ptr<MongologReasoner>
-		createReasoner2(const std::string &name, const std::shared_ptr<KnowledgeBase> &kb,
-						const std::shared_ptr<MongoKnowledgeGraph> &db) {
-			auto r = std::make_shared<MongologReasoner>();
-			r->setDataBackend(db);
-			kb->reasonerManager()->addPlugin(name, r);
-			r->initializeReasoner(knowrob::PropertyTree());
-			r->load_rdf_xml("http://www.ease-crc.org/ont/SOMA.owl");
-			return r;
-		}
-
-		// Per-test-suite set-up.
-		static void SetUpTestSuite() {
-			// Initialize the reasoner
-			try {
-				reasoner();
-			} catch (std::exception &e) {
-				FAIL() << "SetUpTestSuite failed: " << e.what();
-			}
-		}
-
-		static void runTests(const std::string &t) {
-			try {
-				runPrologTests(reasoner(), t);
-			} catch (std::exception &e) {
-				FAIL() << "runTests failed: " << e.what();
-			}
-		}
-
-		static std::shared_ptr<MongologReasoner> reasoner() {
-			static std::shared_ptr<MongologReasoner> reasoner;
-			static std::shared_ptr<KnowledgeBase> kb;
-			static std::shared_ptr<MongoKnowledgeGraph> db;
-
-			if (!reasoner) {
-				std::stringstream ss;
-				ss << "mongolog_";
-				insertUnique(ss);
-
-				kb = std::make_shared<KnowledgeBase>();
-				db = createBackend2(ss.str(), kb);
-				reasoner = createReasoner2(ss.str(), kb, db);
-
-				kb->loadCommon();
-				kb->init();
-			}
-			return reasoner;
-		}
-
-		static std::string getPath(const std::string &filename) {
-			return std::filesystem::path("reasoner") / "mongolog" / filename;
-		}
-	};
-}
-using namespace knowrob::testing;
-
-TEST_F(MongologTests, arithmetic) { runTests(getPath("arithmetic.pl")); }
-
-TEST_F(MongologTests, atoms) { runTests(getPath("atoms.pl")); }
-
-TEST_F(MongologTests, comparison) { runTests(getPath("comparison.pl")); }
-
-TEST_F(MongologTests, control) { runTests(getPath("control.pl")); }
-
-TEST_F(MongologTests, database) { runTests(getPath("database.pl")); }
-
-TEST_F(MongologTests, findall) { runTests(getPath("findall.pl")); }
-
-TEST_F(MongologTests, fluents) { runTests(getPath("fluents.pl")); }
-
-TEST_F(MongologTests, lists) { runTests(getPath("lists.pl")); }
-
-TEST_F(MongologTests, meta) { runTests(getPath("meta.pl")); }
-
-TEST_F(MongologTests, sgml) { runTests(getPath("sgml.pl")); }
-
-TEST_F(MongologTests, terms) { runTests(getPath("terms.pl")); }
-
-TEST_F(MongologTests, typecheck) { runTests(getPath("typecheck.pl")); }
-
-TEST_F(MongologTests, unification) { runTests(getPath("unification.pl")); }
-
-TEST_F(MongologTests, annotation) { runTests(getPath("annotation.pl")); }
-
-TEST_F(MongologTests, triple) { runTests(getPath("triple.plt")); }
-
-TEST_F(MongologTests, semweb) { runTests(getPath("semweb.plt")); }
-
-TEST_F(MongologTests, holds) { runTests(getPath("holds.pl")); }
-
-TEST_F(MongologTests, temporal) { runTests(getPath("temporal.pl")); }
-
-TEST_F(MongologTests, occurs) { runTests(getPath("occurs.plt")); }

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5.0)
 set(CMAKE_CXX_FLAGS "-Wswitch -std=c++0x -pthread ${CMAKE_CXX_FLAGS} -Wno-undef")
-set(CMAKE_CXX_STANDARD 17)
+
 if (POLICY CMP0148)
     cmake_policy(SET CMP0148 OLD)
 endif ()
@@ -23,9 +23,9 @@ if(NOT CMAKE_C_STANDARD)
 
 endif()
 
-# Default to C++17
+# Default to C++20
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD 20)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -36,19 +36,6 @@ endif()
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(ontologies)
 
-find_package(ament_cmake REQUIRED)
-find_package(ament_index_cpp REQUIRED)
-find_package(rcl REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(rcl_action REQUIRED)
-find_package(rcl_yaml_param_parser REQUIRED)
-find_package(rcutils REQUIRED)
-find_package(rmw REQUIRED)
-find_package(rmw_implementation_cmake REQUIRED)
-find_package(urdf REQUIRED)
-find_package(tf2 REQUIRED)
-find_package(tf2_msgs REQUIRED)
-find_package(tf2_ros REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(spdlog REQUIRED)
@@ -62,46 +49,21 @@ set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 find_package(Boost 1.50 REQUIRED COMPONENTS program_options serialization ${Boost_Python_VERSION})
 
-enable_testing()
-find_package(GTest REQUIRED)
-
-find_package(std_msgs REQUIRED)
-find_package(geometry_msgs REQUIRED)
-find_package(visualization_msgs REQUIRED)
-find_package(message_filters REQUIRED)
-
-#find_package(rosidl_default_generators REQUIRED)
-#rosidl_generate_interfaces(${PROJECT_NAME}
-#	ros1/msg/EventToken.msg
-#	ros1/msg/GraphAnswerMessage.msg
-#	ros1/msg/GraphQueryMessage.msg
-#	ros1/msg/KeyValuePair.msg
-#	ros1/action/AskAll.action
-#	ros1/action/AskIncremental.action
-#	ros1/action/AskOne.action
-#	ros1/action/Tell.action
-#)
-
-find_package(rclswi REQUIRED)
-
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost 1.50 REQUIRED COMPONENTS program_options serialization ${Boost_Python_VERSION})
-
-enable_testing()
-find_package(GTest REQUIRED)
+#enable_testing()
+#find_package(GTest REQUIRED)
 
 # swi-prolog
-pkg_check_modules(SWIPL REQUIRED swipl)
-link_directories(${SWIPL_LIBRARY_DIRS})
+find_package(SWIPL REQUIRED)
 
+set(ENV{PKG_CONFIG_PATH} "$ENV{PKG_CONFIG_PATH}:/home/tad/0_UE/UE5_FLAPTTER/Plugins/SenKRR/ThirdParty/raptor/release/lib/pkgconfig")
 pkg_check_modules(RAPTOR REQUIRED raptor2)
 include_directories(include ${RAPTOR_INCLUDE_DIRS})
 
+set(ENV{PKG_CONFIG_PATH} "$ENV{PKG_CONFIG_PATH}:/home/tad/0_UE/UE5_FLAPTTER/Plugins/SenKRR/ThirdParty/rasqal/release/lib/pkgconfig")
 pkg_check_modules(RASQAL REQUIRED rasqal)
 include_directories(include ${RASQAL_INCLUDE_DIRS})
 
+set(ENV{PKG_CONFIG_PATH} "$ENV{PKG_CONFIG_PATH}:/home/tad/0_UE/UE5_FLAPTTER/Plugins/SenKRR/ThirdParty/librdf/release/lib/pkgconfig")
 pkg_check_modules(REDLAND REQUIRED redland)
 include_directories(include ${REDLAND_INCLUDE_DIRS})
 # install ontologies hosted on http servers.
@@ -126,8 +88,10 @@ include_directories(include
         ${EIGEN3_INCLUDE_DIR}
         ${Boost_INCLUDE_DIRS}
 		${Python_INCLUDE_DIRS}
-		${rmw_implementation_INCLUDE_DIRS}
-		${rcl_INCLUDE_DIRS} ${rclcpp_INCLUDE_DIRS})
+        "/home/tad/0_UE/UE5_FLAPTTER/Plugins/SenKRR/ThirdParty/mongo-c-driver/release/include/libbson-1.0/"
+        "/home/tad/0_UE/UE5_FLAPTTER/Plugins/SenKRR/ThirdParty/mongo-c-driver/release/include/libmongoc-1.0/"
+        "/home/tad/0_UE/UE5_FLAPTTER/Plugins/SenKRR/ThirdParty/swipl-devel/release/lib/swipl/include/"
+		)
 
 # define some constants for the compilation of source files that
 # are used to load project-relative files.
@@ -144,10 +108,7 @@ add_definitions(-DBOOST_BIND_GLOBAL_PLACEHOLDERS)
 ##############
 
 # libmongoc-dev
-pkg_check_modules(MONGOC REQUIRED libmongoc-1.0)
-# find_package(libmongoc-1.0 1.7 REQUIRED)
-include_directories(${MONGOC_INCLUDE_DIRS})
-link_directories(${MONGOC_LIBRARY_DIRS})
+find_package(libmongoc-1.0)
 
 ##############
 #### QUERY ANSWERING
@@ -212,7 +173,7 @@ add_library(${KNOWROB_LIB} SHARED
         src/integration/prolog/PrologEngine.cpp
         src/integration/InterfaceUtils.cpp
         src/reasoner/prolog/PrologReasoner.cpp
-        src/reasoner/prolog/PrologTests.cpp
+        #src/reasoner/prolog/PrologTests.cpp
         src/integration/prolog/logging.cpp
         src/integration/prolog/ext/algebra.cpp
         src/reasoner/mongolog/MongologReasoner.cpp
@@ -306,8 +267,16 @@ set(KNOWROB_LIBRARIES
         ${REDLAND_LIBRARIES}
         ${Python_LIBRARIES}
         spdlog::spdlog
-        ${GTEST_LIBRARIES}
-	${rcl_LIBRARIES} ${rclcpp_LIBRARIES} "${ros_cpp_typesupport_target}")
+        #${GTEST_LIBRARIES}
+)
+
+target_link_libraries(${KNOWROB_LIB}
+        ${KNOWROB_LIBRARIES}
+        Boost::program_options
+        Boost::serialization
+        #${Boost_Python_COMPONENT}
+)
+
 # install shared library and headers
 install(TARGETS ${KNOWROB_LIB} PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_PREFIX}/${KNOWROB_LIB})
 install(DIRECTORY include/knowrob DESTINATION include)
@@ -315,30 +284,8 @@ install(DIRECTORY include/knowrob DESTINATION include)
 install(DIRECTORY src/ DESTINATION share/knowrob FILES_MATCHING PATTERN "*.pl")
 install(DIRECTORY src/ DESTINATION share/knowrob FILES_MATCHING PATTERN "*.py")
 
-# Since ROS Humble
-rosidl_get_typesupport_target(ros_cpp_typesupport_target ${KNOWROB_LIB} "rosidl_typesupport_cpp")
-
-ament_target_dependencies(${KNOWROB_LIB}
-  "rcl"
-  "rmw"
-  "rcl_action"
-  "ament_index_cpp"
-  "SWIPL"
-  "RAPTOR"
-  "REDLAND"
-)
-
 if (0)
-add_executable(${PROJECT_NAME}-terminal src/terminal.cpp)
-target_link_libraries(${PROJECT_NAME}-terminal
-        ${KNOWROB_LIBRARIES}
-        Boost::program_options
-        Boost::serialization
-        ${Boost_Python_COMPONENT}
-		${KNOWROB_LIB})
-install(TARGETS ${PROJECT_NAME}-terminal RUNTIME DESTINATION bin)
 endif()
-
 ##############
 ########## Python module
 ##############
@@ -405,63 +352,4 @@ endif()
 install(FILES ${CMAKE_BINARY_DIR}/knowrob.so
         DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/python${Python_VERSION_MAJOR}.${Python_VERSION_MINOR}/site-packages)
 
-##############
-########## Doxygen
-##############
 
-find_package(Doxygen)
-if (DOXYGEN_FOUND)
-    set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/doxyfile.in)
-    set(doxyfile ${CMAKE_CURRENT_BINARY_DIR}/doxyfile)
-    configure_file(${doxyfile_in} ${doxyfile} @ONLY)
-
-    if (NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/doxygen-awesome.css")
-        message(STATUS "Downloading \"doxygen-awesome.css\" into directory \"${CMAKE_CURRENT_BINARY_DIR}\".")
-        file(DOWNLOAD
-                https://raw.githubusercontent.com/jothepro/doxygen-awesome-css/v2.3.2/doxygen-awesome.css
-                ${CMAKE_CURRENT_BINARY_DIR}/doxygen-awesome.css)
-    endif ()
-
-    add_custom_target(doc
-            COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile}
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-            COMMENT "Generating API documentation with Doxygen"
-            VERBATIM)
-endif ()
-
-##############
-
-
-########## Unit Testing
-##############
-if (0)
-# add an executable target for GTest.
-# but the testing code is partly in the *knowrob* library
-# where gtest won't find them without using the "--no-as-needed"
-# flag for the linker.
-add_executable(all_gtests
-        tests/gtests.cpp
-        tests/QueryParserTest.cpp
-        tests/KnowledgeBaseTest.cpp
-        tests/StorageTest.cpp
-        tests/py/test-module.cpp
-        tests/TokenBroadcasterTest.cpp
-        tests/QueryTreeTest.cpp
-        tests/DependencyGraphTest.cpp
-        tests/DataSourceTest.cpp
-        tests/ConjunctiveBroadcasterTest.cpp
-        tests/UnifierTest.cpp)
-add_dependencies(all_gtests knowrob_py)
-target_link_libraries(all_gtests
-        -Wl,--whole-archive,--no-as-needed
-        ${KNOWROB_LIB}
-        -Wl,--no-whole-archive
-        ${Boost_Python_COMPONENT}
-        ${GTEST_MAIN_LIBRARIES})
-endif()
-ament_export_include_directories(include)
-#ament_export_libraries(kb_algebra mongo_kb marker_knowrob tf_knowrob)
-#ament_environment_hooks()
-ament_package(
-	CONFIG_EXTRAS cmake/ontologies.cmake
-)

@@ -20,7 +20,7 @@ namespace knowrob {
 		 * @param formulae list of sub-formulas.
 		 */
 		explicit Disjunction(const std::vector<FormulaPtr> &formulae);
-
+		virtual ~Disjunction(){}
 		// Override ConnectiveFormula
 		const char *operator_symbol() const override { return "\u2228"; }
 

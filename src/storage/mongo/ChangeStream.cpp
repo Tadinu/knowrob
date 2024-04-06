@@ -13,8 +13,8 @@ ChangeStream::ChangeStream(
 		const bson_t *query,
 		ChangeStreamCallback callback)
 		: collection_(collection),
+          callback_(std::move(callback)),
 		  stream_(nullptr),
-		  callback_(std::move(callback)),
 		  next_ptr_() {
 	// connect and append session ID to options
 	bson_t *opts = BCON_NEW(

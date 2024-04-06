@@ -10,7 +10,7 @@
 #include <memory>
 #include <set>
 #include <filesystem>
-#include <boost/python.hpp>
+//#include <boost/python.hpp>
 #include "knowrob/plugins/PluginFactory.h"
 #include "knowrob/integration/python/utils.h"
 #include "knowrob/Logger.h"
@@ -42,7 +42,8 @@ namespace knowrob {
 		 */
 		bool isLoaded() {
 			return knowrob::py::call<bool>([&] {
-				return pyPluginType_ && !pyPluginType_.is_none();
+				//return pyPluginType_ && !pyPluginType_.is_none();
+				return false;
 			});
 		}
 
@@ -59,25 +60,12 @@ namespace knowrob {
 				KB_ERROR("Module '{}' does not exist.", modulePath_.c_str());
 				return false;
 			}
-
-			try {
-				// Make sure module can be imported by possibly extending the sys.path
-				// of the Python interpreter.
-				auto importString = knowrob::py::addToSysPath(modulePath);
-				pyModule_ = boost::python::import(importString.c_str());
-				if (pyModule_.is_none()) {
-					KB_ERROR("Failed to import module '{}'.", modulePath_.c_str());
-					return false;
-				}
-				pyPluginType_ = pyModule_.attr(pluginType_.c_str());
-			} catch (const boost::python::error_already_set &) {
-				throw PythonError();
-			}
 			return isLoaded();
 		}
 
 		// Override PluginFactory
 		std::shared_ptr<NamedPlugin<T>> create(std::string_view pluginID) override {
+#if 0
 			try {
 				boost::python::object pyReasoner = pyPluginType_();
 				// extract the reasoner in appropriate type
@@ -91,6 +79,7 @@ namespace knowrob {
 				throw PythonError();
 			}
 			KB_ERROR("Failed to create plugin from module '{}'", modulePath_.c_str());
+#endif
 			return {};
 		}
 
@@ -100,8 +89,8 @@ namespace knowrob {
 	protected:
 		const std::string modulePath_;
 		const std::string pluginType_;
-		boost::python::object pyModule_;
-		boost::python::object pyPluginType_;
+		//boost::python::object pyModule_;
+		//boost::python::object pyPluginType_;
 		std::string name_;
 	};
 }

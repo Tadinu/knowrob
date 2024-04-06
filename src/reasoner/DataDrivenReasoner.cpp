@@ -10,7 +10,8 @@
 
 using namespace knowrob;
 
-DataDrivenReasoner::DataDrivenReasoner() {
+DataDrivenReasoner::DataDrivenReasoner():
+    Reasoner(PluginType::DataDriven) {
 	using StopChecker = ThreadPool::LambdaRunner::StopChecker;
 	using Runner = ThreadPool::LambdaRunner;
 	updateRunner_ = std::make_shared<Runner>([this](const StopChecker &) { doUpdate(); });
@@ -174,15 +175,14 @@ void DataDrivenReasoner::processReplacement(const std::vector<FramedTriplePtr> &
 
 namespace knowrob::py {
 	// this struct is needed because Reasoner has pure virtual methods
-	struct DataDrivenReasonerWrap : public DataDrivenReasoner, boost::python::wrapper<DataDrivenReasoner> {
-		explicit DataDrivenReasonerWrap(PyObject *p) : self(p), DataDrivenReasoner() {}
+	struct DataDrivenReasonerWrap : public DataDrivenReasoner {
+		explicit DataDrivenReasonerWrap() : DataDrivenReasoner() {}
 
 		void setDataBackend(const StoragePtr &backend) override {
-			call_method<void>(self, "setDataBackend", backend);
 		}
 
 		bool initializeReasoner(const PropertyTree &config) override {
-			return call_method<bool>(self, "initializeReasoner", config);
+			return false;
 		}
 
 		void start() override {
@@ -190,7 +190,6 @@ namespace knowrob::py {
 			//  However, in case there is no overwrite, below will call the default implementation twice.
 			//  But the call is guarded by a check in the default implementation, so no problem.
 			start_default();
-			call_method<void>(self, "start");
 		}
 
 		void start_default() { return this->DataDrivenReasoner::start(); }
@@ -199,39 +198,18 @@ namespace knowrob::py {
 			// Note: In case there is an overwrite, we also want to make a call to the default implementation.
 			//  However, in case there is no overwrite, below will call the default implementation twice.
 			//  But the call is guarded by a check in the default implementation, so no problem.
-			call_method<void>(self, "stop");
 			stop_default();
 		}
 
 		void stop_default() { return this->DataDrivenReasoner::stop(); }
 
-		void update() override { call_method<void>(self, "update"); }
+		void update() override { }
 
 	private:
-		PyObject *self;
+
 	};
 
 	template<>
 	void createType<DataDrivenReasoner>() {
-		using namespace boost::python;
-		enum_<DataDrivenReasoner::Feature>("DataDrivenReasonerFeature")
-				.value("NothingSpecial", DataDrivenReasoner::NothingSpecial)
-				.value("UpdatesItself", DataDrivenReasoner::UpdatesItself)
-				.value("InvalidatesItself", DataDrivenReasoner::InvalidatesItself)
-				.export_values();
-
-		py::createType<reasoner::Event>();
-
-		class_<DataDrivenReasoner, std::shared_ptr<DataDrivenReasonerWrap>, bases<Reasoner>, boost::noncopyable>
-				("DataDrivenReasoner", init<>())
-				.def("enableFeature", &DataDrivenReasonerWrap::enableFeature)
-				.def("hasFeature", &DataDrivenReasonerWrap::hasFeature)
-				.def("emit", &DataDrivenReasonerWrap::emit)
-				.def("setUpdateInterval", &DataDrivenReasonerWrap::setUpdateInterval)
-				.def("updateInterval", &DataDrivenReasonerWrap::updateInterval)
-						// methods that must be implemented by reasoner plugins
-				.def("update", &DataDrivenReasonerWrap::update)
-				.def("start", &DataDrivenReasonerWrap::start, &DataDrivenReasonerWrap::start_default)
-				.def("stop", &DataDrivenReasonerWrap::stop, &DataDrivenReasonerWrap::stop_default);
 	}
 }

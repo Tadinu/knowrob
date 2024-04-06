@@ -4,7 +4,6 @@
  */
 
 #include <utility>
-#include <gtest/gtest.h>
 #include "knowrob/terms/Variable.h"
 #include "knowrob/integration/python/utils.h"
 
@@ -31,11 +30,5 @@ void Variable::write(std::ostream &os) const {
 namespace knowrob::py {
 	template<>
 	void createType<Variable>() {
-		using namespace boost::python;
-		class_<Variable, std::shared_ptr<Variable>, bases<Term>>
-				("Variable", init<std::string>())
-				.def(self < self)
-				.def("name", &Variable::name)
-				.def("isSameVariable", &Variable::isSameVariable);
 	}
 }

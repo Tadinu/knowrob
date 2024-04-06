@@ -34,8 +34,5 @@ std::shared_ptr<knowrob::Blank> Blank::Tabled(std::string_view name) {
 namespace knowrob::py {
 	template<>
 	void createType<Blank>() {
-		using namespace boost::python;
-		class_<Blank, std::shared_ptr<Blank>, bases<Atom, RDFNode>>
-				("Blank", init<std::string_view>());
 	}
 }

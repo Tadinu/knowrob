@@ -35,12 +35,6 @@ namespace knowrob::py {
 		// make sure that the module directory is only added once
 		if (moduleDirectories.count(topmostPythonPath) == 0) {
 			moduleDirectories.insert(topmostPythonPath);
-			// >>> sys.path.append(moduleDir)
-			auto py_sys = boost::python::import("sys");
-			auto py_path = py_sys.attr("path");
-			auto sysPathAppend = py_path.attr("append");
-			sysPathAppend(topmostPythonPath.string());
-			KB_DEBUG("[python] Added '{}' to sys.path.", topmostPythonPath.string().c_str());
 		}
 
 		return relativeModulePath;

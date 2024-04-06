@@ -16,8 +16,8 @@ namespace knowrob {
 	class GraphPattern : public GraphTerm {
 	public:
 		explicit GraphPattern(FramedTriplePatternPtr pattern)
-				: pattern_(std::move(pattern)), GraphTerm(GraphTermType::Pattern) {}
-
+				: GraphTerm(GraphTermType::Pattern), pattern_(std::move(pattern)) {}
+		virtual ~GraphPattern(){}
 		/**
 		 * @return the triple pattern.
 		 */

@@ -3,7 +3,7 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <gtest/gtest.h>
+
 #include "knowrob/formulas/DependencyGraph.h"
 #include "knowrob/queries/QueryParser.h"
 

@@ -99,14 +99,5 @@ namespace knowrob {
 namespace knowrob::py {
 	template<>
 	void createType<AnswerNo>() {
-		using namespace boost::python;
-		class_<AnswerNo, bases<Answer>, std::shared_ptr<AnswerNo>, boost::noncopyable>
-				("AnswerNo", init<>())
-				.def("addUngrounded", &AnswerNo::addUngrounded)
-				.def("positiveUngrounded", &AnswerNo::positiveUngrounded, return_value_policy<reference_existing_object>())
-				.def("negativeUngrounded", &AnswerNo::negativeUngrounded, return_value_policy<reference_existing_object>())
-				.def("mergeWith", &AnswerNo::mergeWith)
-				.def("stringFormOfNo", &AnswerNo::stringFormOfNo)
-				.def("humanReadableFormOfNo", &AnswerNo::humanReadableFormOfNo);
 	}
 }

@@ -177,24 +177,5 @@ void ModalIteration::operator+=(const ModalOperatorPtr &next) {
 namespace knowrob::py {
 	template<>
 	void createType<ModalOperator>() {
-		using namespace boost::python;
-		enum_<ModalType>("ModalType")
-				.value("KNOWLEDGE", ModalType::KNOWLEDGE)
-				.value("BELIEF", ModalType::BELIEF)
-				.value("ALWAYS", ModalType::ALWAYS)
-				.value("SOMETIMES", ModalType::SOMETIMES)
-				.export_values();
-		class_<ModalOperator, std::shared_ptr<ModalOperator>>
-				("ModalOperator", init<ModalType>())
-				.def("isModalNecessity", &ModalOperator::isModalNecessity)
-				.def("isModalPossibility", &ModalOperator::isModalPossibility)
-				.def("modalType", &ModalOperator::modalType)
-				.def("symbol", &ModalOperator::symbol);
-		class_<ModalIteration, std::shared_ptr<ModalIteration>>
-				("ModalIteration", init<>())
-				.def("__eq__", &ModalIteration::operator==)
-				.def("__iter__", range(&ModalIteration::begin, &ModalIteration::end))
-				.def("numOperators", &ModalIteration::numOperators)
-				.def("emptyIteration", &ModalIteration::emptyIteration, return_value_policy<copy_const_reference>());
 	}
 }

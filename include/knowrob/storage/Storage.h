@@ -58,7 +58,10 @@ namespace knowrob {
 	 */
 	class Storage : public DataSourceHandler {
 	public:
-		explicit Storage(StorageFeatures features = StorageFeature::NothingSpecial) : features_(features) {}
+		explicit Storage(StorageFeatures features = StorageFeature::NothingSpecial) : features_(features)
+		{
+			handler_type_ = DataSourceHandlerType::StorageHandler;
+		}
 
 		/**
 		 * @return the vocabulary of this backend.

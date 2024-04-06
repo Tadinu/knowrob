@@ -3,7 +3,6 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <gtest/gtest.h>
 #include <utility>
 #include "knowrob/Logger.h"
 #include "knowrob/queries/QueryTree.h"

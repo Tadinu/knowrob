@@ -112,12 +112,5 @@ namespace knowrob::modals {
 namespace knowrob::py {
 	template<>
 	void createType<ModalFormula>() {
-		using namespace boost::python;
-		class_<ModalFormula, std::shared_ptr<ModalFormula>, bases<CompoundFormula>>
-				("ModalFormula", init<const ModalOperatorPtr &, const FormulaPtr &>())
-				.def("modalOperator", &ModalFormula::modalOperator, return_value_policy<copy_const_reference>())
-				.def("modalFormula", &ModalFormula::modalFormula, return_value_policy<copy_const_reference>())
-				.def("isModalPossibility", &ModalFormula::isModalPossibility)
-				.def("isModalNecessity", &ModalFormula::isModalNecessity);
 	}
 }

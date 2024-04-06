@@ -11,9 +11,9 @@ namespace knowrob::mongo {
     class MongoException : public StorageError {
     public:
         MongoException(const char *msg, const bson_error_t &err)
-                : contextMessage_(msg),
-				  bsonMessage_(err.message),
-				  StorageError("[mongo] {}: {}.", msg, err.message) {}
+                : StorageError("[mongo] {}: {}.", msg, err.message),
+                  bsonMessage_(err.message),
+                  contextMessage_(msg) {}
         const std::string bsonMessage_;
         const std::string contextMessage_;
     };

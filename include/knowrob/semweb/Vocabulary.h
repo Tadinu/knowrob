@@ -205,6 +205,9 @@ namespace knowrob {
 		 */
 		const std::shared_ptr<ImportHierarchy> &importHierarchy() const { return importHierarchy_; }
 
+		std::map<std::string_view, semweb::ClassPtr, std::less<>> getClasses() { return definedClasses_; }
+		std::map<std::string_view, semweb::PropertyPtr, std::less<>> getProperties() { return definedProperties_; }
+
 	protected:
 		std::map<std::string_view, semweb::ClassPtr, std::less<>> definedClasses_;
 		std::map<std::string_view, semweb::PropertyPtr, std::less<>> definedProperties_;

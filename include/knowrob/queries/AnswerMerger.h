@@ -16,7 +16,7 @@ namespace knowrob {
 	class AnswerMerger : public AnswerTransformer {
 	public:
 		explicit AnswerMerger(AnswerPtr partialResult);
-
+		virtual ~AnswerMerger(){}
 		// override AnswerTransformer
 		TokenPtr transform(const TokenPtr &tok) override;
 

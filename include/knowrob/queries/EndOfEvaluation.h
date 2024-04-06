@@ -15,8 +15,7 @@ namespace knowrob {
 	 * A control token that indicates the end of an evaluation.
 	 */
 	class EndOfEvaluation : public Token {
-	private:
-		EndOfEvaluation() : Token(TokenType::CONTROL_TOKEN) {
+	private:EndOfEvaluation() : Token(TokenType::CONTROL_TOKEN) {
 			isTerminalToken_ = true;
 		};
 

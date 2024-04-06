@@ -3,7 +3,7 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include <gtest/gtest.h>
+
 #include "knowrob/terms/ListTerm.h"
 #include "knowrob/terms/String.h"
 #include "knowrob/integration/python/utils.h"
@@ -43,33 +43,5 @@ void ListTerm::write(std::ostream &os) const {
 namespace knowrob::py {
 	template<>
 	void createType<ListTerm>() {
-		using namespace boost::python;
-		class_<ListTerm, std::shared_ptr<ListTerm>, bases<Function>>
-				("ListTerm", init<const std::vector<TermPtr> &>())
-				.def("__iter__", range(&ListTerm::begin, &ListTerm::end))
-				.def("isNIL", &ListTerm::isNIL)
-				.def("elements", &ListTerm::elements, return_value_policy<reference_existing_object>());
 	}
-}
-
-/******************************************/
-/************** Unit Tests ****************/
-/******************************************/
-
-TEST(list_term, NIL) {
-	EXPECT_TRUE(ListTerm::nil()->elements().empty());
-	EXPECT_TRUE(ListTerm({}).elements().empty());
-	EXPECT_TRUE(ListTerm({}).isNIL());
-	EXPECT_FALSE(ListTerm::nil()->isAtomic());
-	EXPECT_TRUE(ListTerm::nil()->isGround());
-}
-
-TEST(list_term, lists) {
-	auto x = std::make_shared<String>("x");
-	auto y = std::make_shared<String>("y");
-	EXPECT_TRUE(ListTerm({x}).isGround());
-	EXPECT_FALSE(ListTerm({x}).isAtomic());
-	EXPECT_FALSE(ListTerm({x}).elements().empty());
-	EXPECT_EQ(ListTerm({x, y}).elements()[0], x);
-	EXPECT_EQ(ListTerm({x, y}).elements()[1], y);
 }

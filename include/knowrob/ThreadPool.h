@@ -163,8 +163,7 @@ namespace knowrob {
 		// Note: a virtual method is avoided as these cannot be called in destructors.
 		std::function<void()> finalizeWorker_;
 
-	private:
-		// list of threads doing work
+	private:// list of threads doing work
 		std::list<Worker *> workerThreads_;
 		// currently queued work that has not been associated to a worker yet
 		std::queue<std::shared_ptr<ThreadPool::Runner>> workQueue_;

@@ -19,7 +19,7 @@ namespace knowrob {
 		 * @param formula the negated formula.
 		 */
 		explicit Negation(const FormulaPtr &formula);
-
+		virtual ~Negation(){}
 		const FormulaPtr &negatedFormula() const { return formulae_[0]; }
 
 		// Override ConnectiveFormula

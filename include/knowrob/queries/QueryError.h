@@ -26,7 +26,8 @@ namespace knowrob {
 		 */
 		template<typename ... Args>
 		explicit QueryError(const char *fmt, Args &&... args)
-				: KnowRobError("QueryError", fmt::format(fmt, args...)) {}
+				: KnowRobError("QueryError", "Error"/*fmt::format(fmt, args...)*/)
+		{}
 	};
 }
 

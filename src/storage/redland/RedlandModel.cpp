@@ -78,8 +78,8 @@ static int logRedlandMessage([[maybe_unused]] void *user_data, librdf_log_messag
 
 RedlandModel::RedlandModel()
 		: SPARQLBackend(SPARQLFlag::NOT_EXISTS_UNSUPPORTED),
-		  world_(nullptr),
-		  ownedWorld_(nullptr),
+          ownedWorld_(nullptr),
+          world_(nullptr),
 		  model_(nullptr),
 		  storage_(nullptr),
 		  storageType_(RedlandStorageType::MEMORY) {

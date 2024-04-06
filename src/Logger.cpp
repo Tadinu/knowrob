@@ -123,11 +123,5 @@ std::string Logger::formatGenericFailure(const std::string &name, const std::str
 namespace knowrob::py {
 	template<>
 	void createType<Logger>() {
-		using namespace boost::python;
-		def("logInfo", +[](const std::string &msg) { KB_INFO(msg); });
-		def("logWarn", +[](const std::string &msg) { KB_WARN(msg); });
-		def("logError", +[](const std::string &msg) { KB_ERROR(msg); });
-		def("logDebug", +[](const std::string &msg) { KB_DEBUG(msg); });
-		def("logCritical", +[](const std::string &msg) { KB_CRITICAL(msg); });
 	}
 }

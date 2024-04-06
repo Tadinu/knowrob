@@ -114,8 +114,9 @@ ReasonerManager::addPlugin(std::string_view reasonerID, const std::shared_ptr<Re
 			backendManager_->vocabulary()->importHierarchy()->ORIGIN_REASONER, reasonerID);
 
 	// check if reasoner implements DataBackend interface
-	auto backend = std::dynamic_pointer_cast<Storage>(reasoner);
-	if (backend) {
+	if (reasoner->handlerType() == DataSourceHandlerType::StorageHandler) {
+	    auto handler = std::static_pointer_cast<DataSourceHandler>(reasoner);
+	    auto backend = std::static_pointer_cast<Storage>(handler);
 		setDataBackend(reasoner, backend);
 		backendManager_->addPlugin(reasonerID, backend);
 	}
@@ -125,15 +126,13 @@ ReasonerManager::addPlugin(std::string_view reasonerID, const std::shared_ptr<Re
 
 void ReasonerManager::initPlugin(const std::shared_ptr<NamedReasoner> &namedReasoner) {
 	// check if the reasoner is data-driven
-	auto dataDriven = std::dynamic_pointer_cast<DataDrivenReasoner>(namedReasoner->value());
-	if (dataDriven) {
+	if (namedReasoner->value()->type() == PluginType::DataDriven) {
 		KB_INFO("Using data-driven reasoner with id '{}'.", namedReasoner->name());
-		dataDriven_[namedReasoner->name()] = dataDriven;
+		dataDriven_[namedReasoner->name()] = std::static_pointer_cast<DataDrivenReasoner>(namedReasoner->value());;
 	}
 	// check if the reasoner is goal-driven
-	auto goalDriven = std::dynamic_pointer_cast<GoalDrivenReasoner>(namedReasoner->value());
-	if (goalDriven) {
+	if (namedReasoner->value()->type()  == PluginType::GoalDriven) {
 		KB_INFO("Using goal-driven reasoner with id '{}'.", namedReasoner->name());
-		goalDriven_[namedReasoner->name()] = goalDriven;
+		goalDriven_[namedReasoner->name()] = std::static_pointer_cast<GoalDrivenReasoner>(namedReasoner->value());;
 	}
 }

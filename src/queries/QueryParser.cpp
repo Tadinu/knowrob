@@ -55,13 +55,5 @@ std::string QueryParser::parseRawAtom(const std::string &queryString) {
 namespace knowrob::py {
 	template<>
 	void createType<QueryParser>() {
-		using namespace boost::python;
-		class_<QueryParser, boost::noncopyable>
-				("QueryParser", no_init)
-				.def("parse", &QueryParser::parse).staticmethod("parse")
-				.def("parsePredicate", &QueryParser::parsePredicate).staticmethod("parsePredicate")
-				.def("parseFunction", &QueryParser::parseFunction).staticmethod("parseFunction")
-				.def("parseConstant", &QueryParser::parseConstant).staticmethod("parseConstant")
-				.def("parseRawAtom", &QueryParser::parseRawAtom).staticmethod("parseRawAtom");
 	}
 }

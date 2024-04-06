@@ -94,7 +94,7 @@ namespace knowrob {
 				  builtinType_(builtinType),
 				  bindVar_(std::move(bindVar)),
 				  isOptional_(true) {}
-
+		virtual ~GraphBuiltin(){}
 		/**
 		 * @return the builtin type.
 		 */

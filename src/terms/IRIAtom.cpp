@@ -56,10 +56,5 @@ void IRIAtom::write(std::ostream &os) const {
 namespace knowrob::py {
 	template<>
 	void createType<IRIAtom>() {
-		using namespace boost::python;
-		class_<IRIAtom, std::shared_ptr<IRIAtom>, bases<Atom, RDFNode>>("IRIAtom", no_init)
-				.def("Tabled", &IRIAtom::Tabled).staticmethod("Tabled")
-				.def("rdfNodeType", &IRIAtom::rdfNodeType)
-				.def("isIRI", &IRIAtom::isIRI);
 	}
 }

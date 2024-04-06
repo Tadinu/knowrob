@@ -191,18 +191,5 @@ namespace knowrob {
 namespace knowrob::py {
 	template<>
 	void createType<AnswerYes>() {
-		using namespace boost::python;
-		class_<AnswerYes, bases<Answer>, std::shared_ptr<AnswerYes>, boost::noncopyable>
-				("AnswerYes", init<>())
-				.def("stringFormOfYes", &AnswerYes::stringFormOfYes)
-				.def("humanReadableFormOfYes", &AnswerYes::humanReadableFormOfYes)
-				.def("hasGrounding", &AnswerYes::hasGrounding)
-				.def("addGrounding", &AnswerYes::addGrounding)
-				.def("substitution", &AnswerYes::substitution, return_value_policy<reference_existing_object>())
-				.def("positiveGroundings", &AnswerYes::positiveGroundings, return_value_policy<reference_existing_object>())
-				.def("negativeGroundings", &AnswerYes::negativeGroundings, return_value_policy<reference_existing_object>())
-				.def("mergeWith", &AnswerYes::mergeWith)
-				.def("isRicherThan", &AnswerYes::isRicherThan)
-				.def("isGenericYes", &AnswerYes::isGenericYes);
 	}
 }

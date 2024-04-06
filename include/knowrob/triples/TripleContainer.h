@@ -41,8 +41,7 @@ namespace knowrob {
 
 			void increment() { ptr_ = generator_(); }
 
-		private:
-			ConstGenerator generator_;
+		private:	ConstGenerator generator_;
 			const FramedTriplePtr *ptr_;
 		};
 
@@ -103,8 +102,7 @@ namespace knowrob {
 
 			void increment() { ptr_ = generator_(); }
 
-		private:
-			MutableGenerator generator_;
+		private:	MutableGenerator generator_;
 			FramedTriplePtr *ptr_;
 		};
 

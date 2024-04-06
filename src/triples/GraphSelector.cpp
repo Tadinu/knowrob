@@ -148,15 +148,5 @@ std::ostream &std::operator<<(std::ostream &os, const knowrob::GraphSelector &gs
 namespace knowrob::py {
 	template<>
 	void createType<GraphSelector>() {
-		using namespace boost::python;
-		class_<GraphSelector, std::shared_ptr<GraphSelector>>
-				("GraphSelector", init<>())
-				.def_readwrite("graph", &GraphSelector::graph)
-				.def_readwrite("uncertain", &GraphSelector::uncertain)
-				.def_readwrite("occasional", &GraphSelector::occasional)
-				.BOOST_PYTHON_ADD_OPTIONAL("perspective", &GraphSelector::perspective)
-				.BOOST_PYTHON_ADD_OPTIONAL("begin", &GraphSelector::begin)
-				.BOOST_PYTHON_ADD_OPTIONAL("end", &GraphSelector::end)
-				.BOOST_PYTHON_ADD_OPTIONAL("confidence", &GraphSelector::confidence);
 	}
 }

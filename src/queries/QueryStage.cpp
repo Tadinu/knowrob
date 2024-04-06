@@ -17,11 +17,11 @@ using namespace knowrob;
 
 QueryStage::QueryStage(QueryContextPtr ctx)
 		: TokenBroadcaster(),
-		  ctx_(std::move(ctx)),
-		  isQueryOpened_(true),
-		  isAwaitingInput_(true),
-		  hasPositiveAnswer_(false),
-		  hasStopRequest_(false) {
+          isQueryOpened_(true),
+          isAwaitingInput_(true),
+          hasStopRequest_(false),
+          hasPositiveAnswer_(false),
+		  ctx_(std::move(ctx)){
 }
 
 QueryStage::~QueryStage() {

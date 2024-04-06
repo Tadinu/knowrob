@@ -11,12 +11,5 @@ using namespace knowrob;
 namespace knowrob::py {
 	template<>
 	void createType<QueryContext>() {
-		using namespace boost::python;
-		class_<QueryContext, std::shared_ptr<QueryContext>>
-				("QueryContext", init<int>())
-				.def(init<const QueryContext &, const ModalOperatorPtr &>())
-				.def_readwrite("queryFlags", &QueryContext::queryFlags)
-				.def_readwrite("modalIteration", &QueryContext::modalIteration)
-				.def_readwrite("selector", &QueryContext::selector);
 	}
 }

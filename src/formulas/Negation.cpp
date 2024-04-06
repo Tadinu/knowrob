@@ -37,9 +37,5 @@ namespace knowrob {
 namespace knowrob::py {
 	template<>
 	void createType<Negation>() {
-		using namespace boost::python;
-		class_<Negation, std::shared_ptr<Negation>, bases<CompoundFormula>>
-				("Negation", init<const FormulaPtr &>())
-				.def("negatedFormula", &Negation::negatedFormula, return_value_policy<copy_const_reference>());
 	}
 }

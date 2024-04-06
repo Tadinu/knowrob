@@ -75,8 +75,7 @@ namespace knowrob {
 		 */
 		Iterator end() { return uriToAlias_.end(); }
 
-	private:
-		std::map<std::string, std::string, std::less<>> uriToAlias_;
+	private:std::map<std::string, std::string, std::less<>> uriToAlias_;
 		std::map<std::string, std::string, std::less<>> aliasToURI_;
 
 		PrefixRegistry();

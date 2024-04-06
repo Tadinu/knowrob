@@ -62,10 +62,5 @@ MutableTripleContainer::MutableGenerator TripleViewBatch::generator() {
 namespace knowrob::py {
 	template<>
 	void createType<TripleContainer>() {
-		using namespace boost::python;
-		class_<TripleContainer, std::shared_ptr<TripleContainer>, boost::noncopyable>
-				("TripleContainer", no_init)
-				.def("__iter__",
-					 boost::python::iterator<TripleContainer, boost::python::return_value_policy<boost::python::copy_const_reference>>{});
 	}
 }

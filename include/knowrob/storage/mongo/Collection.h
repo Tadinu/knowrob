@@ -153,8 +153,7 @@ namespace knowrob::mongo {
 		 */
 		bool empty();
 
-	private:
-		std::shared_ptr<Connection> connection_;
+	private:std::shared_ptr<Connection> connection_;
 		mongoc_client_t *client_;
 		mongoc_client_session_t *session_;
 		mongoc_collection_t *coll_;

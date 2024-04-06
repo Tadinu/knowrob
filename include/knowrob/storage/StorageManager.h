@@ -21,6 +21,7 @@ namespace knowrob {
 		 * @param vocabulary the vocabulary associated with this manager.
 		 */
 		explicit StorageManager(const std::shared_ptr<Vocabulary> &vocabulary);
+		virtual ~StorageManager(){}
 
 		/**
 		 * @return the vocabulary associated with this manager.
@@ -49,8 +50,7 @@ namespace knowrob {
 		// override PluginManager
 		std::shared_ptr<NamedBackend> addPlugin(std::string_view reasonerID, const StoragePtr &backend) override;
 
-	private:
-		std::shared_ptr<Vocabulary> vocabulary_;
+	private:std::shared_ptr<Vocabulary> vocabulary_;
 		std::map<std::string_view, QueryableBackendPtr> persistent_;
 		std::map<std::string_view, QueryableBackendPtr> queryable_;
 

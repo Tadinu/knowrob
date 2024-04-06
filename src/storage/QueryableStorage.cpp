@@ -60,8 +60,7 @@ namespace knowrob {
 	public:
 		explicit FramedTripleView_withBindings(const BindingsPtr &bindings) : bindings_(bindings) {}
 
-	private:
-		const BindingsPtr &bindings_;
+	private:const BindingsPtr &bindings_;
 	};
 }
 
@@ -370,13 +369,12 @@ GraphQueryExpansionPtr QueryableStorage::expand(const GraphQueryPtr &q) {
 }
 
 namespace knowrob::py {
-	struct QueryableStorageWrap : public QueryableStorage, boost::python::wrapper<QueryableStorage> {
-		explicit QueryableStorageWrap(PyObject *p, const StorageFeatures features)
-				: self(p), QueryableStorage(features) {}
+	struct QueryableStorageWrap : public QueryableStorage {
+		explicit QueryableStorageWrap(const StorageFeatures features)
+				: QueryableStorage(features) {}
 
 		// virtual
 		void foreach(const TripleVisitor &visitor) const override {
-			call_method<void>(self, "foreach", visitor);
 		}
 
 		void foreach_default(const TripleVisitor &visitor) const {
@@ -384,7 +382,7 @@ namespace knowrob::py {
 		}
 
 		bool contains(const FramedTriple &triple) override {
-			return call_method<bool, const FramedTriple &>(self, "contains", triple);
+			return false;
 		}
 
 		bool contains_default(const FramedTriple &triple) {
@@ -392,7 +390,6 @@ namespace knowrob::py {
 		}
 
 		void match(const FramedTriplePattern &query, const TripleVisitor &visitor) override {
-			call_method<void>(self, "match", query, visitor);
 		}
 
 		void match_default(const FramedTriplePattern &query, const TripleVisitor &visitor) {
@@ -401,81 +398,53 @@ namespace knowrob::py {
 
 		// pure virtual
 		bool isPersistent() const override {
-			return call_method<bool>(self, "isPersistent");
 		}
 
 		// pure virtual
 		void batch(const TripleHandler &callback) const override {
-			call_method<void>(self, "batch", callback);
 		}
 
 		// pure virtual
 		void batchOrigin(std::string_view origin, const TripleHandler &callback) override {
-			call_method<void>(self, "batchOrigin", origin, callback);
 		}
 
 		// pure virtual
 		void query(const GraphQueryPtr &query, const BindingsHandler &callback) override {
-			call_method<void>(self, "query", query, callback);
 		}
 
 		// pure virtual
 		void count(const ResourceCounter &callback) const override {
-			call_method<void>(self, "count", callback);
 		}
 
 		// pure virtual
 		bool initializeBackend(const PropertyTree &config) override {
-			return call_method<bool>(self, "initializeBackend", config);
 		}
 
 		// pure virtual
 		bool insertOne(const FramedTriple &triple) override {
-			return call_method<bool>(self, "insertOne", &triple);
 		}
 
 		// pure virtual
 		bool insertAll(const TripleContainerPtr &triples) override {
-			return call_method<bool>(self, "insertAll", triples);
 		}
 
 		// pure virtual
 		bool removeOne(const FramedTriple &triple) override {
-			return call_method<bool>(self, "removeOne", &triple);
 		}
 
 		// pure virtual
 		bool removeAll(const TripleContainerPtr &triples) override {
-			return call_method<bool>(self, "removeAll", triples);
 		}
 
 		// pure virtual
 		bool removeAllWithOrigin(std::string_view origin) override {
-			return call_method<bool>(self, "removeAllWithOrigin", origin.data());
 		}
 
 	private:
-		PyObject *self;
+
 	};
 
 	template<>
 	void createType<QueryableStorage>() {
-		using namespace boost::python;
-		class_<QueryableStorage, std::shared_ptr<QueryableStorageWrap>, bases<Storage>, boost::noncopyable>
-				("QueryableStorage", init<StorageFeatures>())
-				.def("setVersionOfOrigin", &QueryableStorage::setVersionOfOrigin)
-				.def("getVersionOfOrigin", &QueryableStorage::getVersionOfOrigin)
-				.def("dropSessionOrigins", &QueryableStorage::dropSessionOrigins)
-				.def("yes", &QueryableStorage::yes).staticmethod("yes")
-				.def("no", &QueryableStorage::no).staticmethod("no")
-						// methods that must be implemented by backend plugins
-				.def("foreach", &QueryableStorageWrap::foreach, &QueryableStorageWrap::foreach_default)
-				.def("contains", &QueryableStorageWrap::contains, &QueryableStorageWrap::contains_default)
-				.def("match", &QueryableStorageWrap::match, &QueryableStorageWrap::match_default)
-				.def("isPersistent", pure_virtual(&QueryableStorageWrap::isPersistent))
-				.def("batch", pure_virtual(&QueryableStorageWrap::batch))
-				.def("batchOrigin", pure_virtual(&QueryableStorageWrap::batchOrigin))
-				.def("query", pure_virtual(&QueryableStorageWrap::query))
-				.def("count", pure_virtual(&QueryableStorageWrap::count));
 	}
 }

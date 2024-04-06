@@ -75,39 +75,17 @@ namespace std {
 
 namespace knowrob::py {
 	// this struct is needed because Term has pure virtual methods
-	struct TermWrap : public Term, boost::python::wrapper<Term> {
-		explicit TermWrap(PyObject *p, TermType termType) : self(p), Term(termType) {}
+	struct TermWrap : public Term {
+		explicit TermWrap(TermType termType) : Term(termType) {}
 
 		const std::set<std::string_view> &
-		variables() const override { return knowrob::py::call_method<std::set<std::string_view> &>(self, "variables"); }
+		variables() const override { }
 
 	private:
-		PyObject *self;
+
 	};
 
 	template<>
 	void createType<Term>() {
-		using namespace boost::python;
-		enum_<TermType>("TermType")
-				.value("FUNCTION", TermType::FUNCTION)
-				.value("ATOMIC", TermType::ATOMIC)
-				.value("VARIABLE", TermType::VARIABLE)
-				.export_values();
-		class_<Term, std::shared_ptr<TermWrap>, boost::noncopyable>
-				("Term", no_init)
-				.def("__eq__", &Term::operator==)
-				.def("__repr__", +[](Term &t) { return readString(t); })
-				.def("__hash__", &Term::hash)
-				.def("termType", &Term::termType)
-				.def("isAtomic", &Term::isAtomic)
-				.def("isAtom", &Term::isAtom)
-				.def("isVariable", &Term::isVariable)
-				.def("isFunction", &Term::isFunction)
-				.def("isNumeric", &Term::isNumeric)
-				.def("isString", &Term::isString)
-				.def("isIRI", &Term::isIRI)
-				.def("isBlank", &Term::isBlank)
-				.def("isGround", &Term::isGround)
-				.def("variables", pure_virtual(&Term::variables), return_value_policy<copy_const_reference>());
 	}
 }

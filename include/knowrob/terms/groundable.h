@@ -118,7 +118,7 @@ namespace knowrob {
 			if (auto grounded = std::dynamic_pointer_cast<TermType>(term)) {
 				return groundable<TermType>(grounded);
 			} else {
-				KB_WARN("Cannot cast term `{}` to type `{}`.", *term, typeid(TermType).name());
+				//KB_WARN("Cannot cast term `{}` to type `{}`.", *term, typeid(TermType).name());
 				return groundable<TermType>();
 			}
 		}

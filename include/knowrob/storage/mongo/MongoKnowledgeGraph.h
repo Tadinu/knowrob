@@ -31,6 +31,7 @@ namespace knowrob {
 		static const std::string COLL_NAME_TESTS;
 
 		MongoKnowledgeGraph();
+		virtual ~MongoKnowledgeGraph(){}
 
 		/**
 		 * Initialize the knowledge graph with a MongoDB URI.

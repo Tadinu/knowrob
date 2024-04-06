@@ -14,8 +14,8 @@ using namespace knowrob::mongo;
 std::atomic<long> QueryWatch::id_counter_ = 0;
 
 QueryWatch::QueryWatch()
-		: isRunning_(false),
-		  thread_(nullptr),
+		: thread_(nullptr),
+          isRunning_(false),
 		  watchRate_(200) {
 }
 

@@ -28,8 +28,5 @@ void Top::write(std::ostream &os) const {
 namespace knowrob::py {
 	template<>
 	void createType<Top>() {
-		using namespace boost::python;
-		class_<Top, std::shared_ptr<Top>, bases<Predicate>>("Top", no_init)
-				.def("get", &Top::get, return_value_policy<copy_const_reference>());
 	}
 }

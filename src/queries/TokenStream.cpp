@@ -119,20 +119,5 @@ bool TokenStream::Channel::isOpened() const {
 namespace knowrob::py {
 	template<>
 	void createType<TokenStream>() {
-		using namespace boost::python;
-		createType<Token>();
-		class_<TokenStream, std::shared_ptr<TokenStream>, boost::noncopyable>
-				("TokenStream", no_init)
-				.def("isOpened", &TokenStream::isOpened);
-		class_<TokenStream::Channel, std::shared_ptr<TokenStream::Channel>, boost::noncopyable>
-				("TokenChannel", no_init)
-				.def("create", &TokenStream::Channel::create)
-				.def("push", &TokenStream::Channel::push)
-				.def("close", &TokenStream::Channel::close)
-				.def("isOpened", &TokenStream::Channel::isOpened)
-				.def("id", &TokenStream::Channel::id);
-		createType<TokenQueue>();
-		createType<TokenBroadcaster>();
-		createType<TokenBuffer>();
 	}
 }

@@ -49,13 +49,5 @@ TokenPtr TokenQueue::pop_front() {
 namespace knowrob::py {
 	template<>
 	void createType<TokenQueue>() {
-		using namespace boost::python;
-		class_<TokenQueue, std::shared_ptr<TokenQueue>, bases<TokenStream>, boost::noncopyable>
-				("TokenQueue", init<>())
-				.def("front", &TokenQueue::front, return_value_policy<reference_existing_object>())
-				.def("pop", &TokenQueue::pop)
-				.def("pop_front", &TokenQueue::pop_front)
-				.def("empty", &TokenQueue::empty)
-				.def("size", &TokenQueue::size);
 	}
 }

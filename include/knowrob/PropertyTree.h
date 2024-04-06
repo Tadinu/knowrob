@@ -69,8 +69,7 @@ namespace knowrob {
 		 */
 		auto ptree() const { return ptree_; }
 
-	private:
-		void loadProperty(const std::string &key, const boost::property_tree::ptree &ptree);
+	private:void loadProperty(const std::string &key, const boost::property_tree::ptree &ptree);
 
 		std::map<std::string, TermPtr> properties_;
 		std::list<std::shared_ptr<DataSource>> dataSources_;

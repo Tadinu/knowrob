@@ -79,10 +79,10 @@ std::shared_ptr<ThreadPool::Runner> ThreadPool::popWork() {
 
 
 ThreadPool::Worker::Worker(ThreadPool *threadPool)
-		: hasTerminateRequest_(false),
-		  isTerminated_(false),
-		  threadPool_(threadPool),
-		  thread_(&Worker::run, this) {
+		: threadPool_(threadPool),
+		  thread_(&Worker::run, this),
+          isTerminated_(false),
+          hasTerminateRequest_(false) {
 }
 
 ThreadPool::Worker::~Worker() {
@@ -145,8 +145,8 @@ void ThreadPool::Worker::run() {
 
 ThreadPool::Runner::Runner()
 		: isTerminated_(false),
-		  hasStopRequest_(false),
 		  isRunning_(false),
+          hasStopRequest_(false),
 		  exceptionHandler_(nullptr) {}
 
 ThreadPool::Runner::~Runner() {
@@ -167,14 +167,6 @@ void ThreadPool::Runner::runInternal() {
 	// do the work
 	try {
 		run();
-	}
-	catch (const boost::python::error_already_set &) {
-		PythonError py_error;
-		if (exceptionHandler_) {
-			exceptionHandler_(py_error);
-		} else {
-			KB_WARN("Worker error in Python code: {}.", py_error.what());
-		}
 	}
 	catch (const std::exception &e) {
 		if (exceptionHandler_) {

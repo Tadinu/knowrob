@@ -35,6 +35,7 @@ namespace knowrob {
 	class StringTemplate : public StringBase {
 	public:
 		explicit StringTemplate(std::string_view str) : str_(str) {}
+		virtual ~StringTemplate(){}
 
 		// override Atomic
 		std::string_view stringForm() const override { return str_; }

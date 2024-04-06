@@ -6,8 +6,8 @@
 #ifndef KNOWROB_KNOWROB_ERROR_H
 #define KNOWROB_KNOWROB_ERROR_H
 
-#include <fmt/core.h>
 #include <optional>
+#include <fmt/core.h>
 
 namespace knowrob {
 	/**

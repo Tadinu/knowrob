@@ -7,6 +7,7 @@
 #include <boost/property_tree/json_parser.hpp>
 #include <knowrob/Logger.h>
 #include <knowrob/KnowledgeBase.h>
+#include <knowrob/KnowRobError.h>
 #include <knowrob/URI.h>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include "knowrob/queries/QueryPipeline.h"
@@ -577,37 +578,7 @@ bool KnowledgeBase::loadNonOntologySource(const DataSourcePtr &source) const {
 
 namespace knowrob::py {
 	template<>
-	void createType<KnowledgeBase>() {
-		using namespace boost::python;
-
-		// these typedefs are necessary to resolve functions with duplicate names which is
-		// fine in C++ but not in Python, so they need special handling here.
-		// The typedefs are used to explicitly select the mapped method.
-		using QueryPredicate = TokenBufferPtr (KnowledgeBase::*)(const FirstOrderLiteralPtr &, const QueryContextPtr &);
-		using QueryFormula = TokenBufferPtr (KnowledgeBase::*)(const FormulaPtr &, const QueryContextPtr &);
-		using QueryGraph = TokenBufferPtr (KnowledgeBase::*)(const GraphPathQueryPtr &);
-		using ContainerAction = bool (KnowledgeBase::*)(const TripleContainerPtr &);
-		using ListAction = bool (KnowledgeBase::*)(const std::vector<FramedTriplePtr> &);
-
-		createType<Vocabulary>();
-		createType<GraphQuery>();
-
-		class_<KnowledgeBase, std::shared_ptr<KnowledgeBase>, boost::noncopyable>
-				("KnowledgeBase", init<>())
-				.def(init<std::string_view>())
-				.def("init", &KnowledgeBase::init)
-				.def("loadCommon", &KnowledgeBase::loadCommon)
-				.def("loadDataSource", &KnowledgeBase::loadDataSource)
-				.def("vocabulary", &KnowledgeBase::vocabulary, return_value_policy<reference_existing_object>())
-				.def("submitQueryFormula", static_cast<QueryFormula>(&KnowledgeBase::submitQuery))
-				.def("submitQueryPredicate", static_cast<QueryPredicate>(&KnowledgeBase::submitQuery))
-				.def("submitQueryGraph", static_cast<QueryGraph>(&KnowledgeBase::submitQuery))
-				.def("insertOne", &KnowledgeBase::insertOne)
-				.def("insertAllFromContainer", static_cast<ContainerAction>(&KnowledgeBase::insertAll))
-				.def("insertAllFromList", static_cast<ListAction>(&KnowledgeBase::insertAll))
-				.def("removeOne", &KnowledgeBase::removeOne)
-				.def("removeAllFromContainer", static_cast<ContainerAction>(&KnowledgeBase::removeAll))
-				.def("removeAllFromList", static_cast<ListAction>(&KnowledgeBase::removeAll))
-				.def("removeAllWithOrigin", &KnowledgeBase::removeAllWithOrigin);
+	void createType<KnowledgeBase>()
+	{
 	}
 }

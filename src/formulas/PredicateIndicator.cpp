@@ -33,13 +33,5 @@ std::shared_ptr<Term> PredicateIndicator::toTerm() const {
 namespace knowrob::py {
 	template<>
 	void createType<PredicateIndicator>() {
-		using namespace boost::python;
-		class_<PredicateIndicator, std::shared_ptr<PredicateIndicator>>
-				("PredicateIndicator", init<const std::string &, unsigned int>())
-				.def("__eq__", &PredicateIndicator::operator==)
-				.def(self < self)
-				.def("name", &PredicateIndicator::functor, return_value_policy<copy_const_reference>())
-				.def("arity", &PredicateIndicator::arity)
-				.def("toTerm", &PredicateIndicator::toTerm);
 	}
 }

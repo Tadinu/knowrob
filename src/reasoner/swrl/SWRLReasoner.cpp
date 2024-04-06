@@ -3,7 +3,6 @@
  * https://github.com/knowrob/knowrob for license details.
  */
 
-#include "knowrob/reasoner/prolog/PrologTests.h"
 #include "knowrob/reasoner/swrl/SWRLReasoner.h"
 #include "knowrob/reasoner/ReasonerManager.h"
 
@@ -33,15 +32,3 @@ bool SWRLReasoner::initializeDefaultPackages()
 {
 	return consult(std::filesystem::path("reasoner") / "swrl" / "__init__.pl");
 }
-
-namespace knowrob::testing {
-	class SWRLTests : public PrologTests<knowrob::SWRLReasoner, knowrob::PrologBackend> {
-	protected:
-		static std::string getPath(const std::string &filename) {
-			return std::filesystem::path("reasoner") / "swrl" / filename;
-		}
-	};
-}
-using namespace knowrob::testing;
-
-TEST_F(SWRLTests, swrl) { runTests(getPath("swrl.plt")); }

@@ -29,8 +29,8 @@ namespace ascii = boost::spirit::ascii;
 
 DataSource::DataSource(URI uri, std::string_view format, DataSourceType dataSourceType)
 		: dataSourceType_(dataSourceType),
-		  uri_(std::move(uri)),
-		  format_(format) {
+		  format_(format),
+		  uri_(std::move(uri)) {
 }
 
 std::string DataSource::getNameFromURI(const std::string &uriString) {
@@ -142,22 +142,5 @@ DataSourcePtr DataSource::create(const VocabularyPtr &vocabulary, const boost::p
 namespace knowrob::py {
 	template<>
 	void createType<DataSource>() {
-		using namespace boost::python;
-		class_<DataSource, std::shared_ptr<DataSource>>
-				("DataSource", no_init)
-				.def("format", &DataSource::format, return_value_policy<copy_const_reference>())
-				.def("uri", &DataSource::uri, return_value_policy<copy_const_reference>())
-				.def("path", &DataSource::path, return_value_policy<copy_const_reference>())
-				.def("version", &DataSource::version)
-				.def("name", &DataSource::name)
-				.def("dataSourceType", &DataSource::dataSourceType)
-				.def("isVersionString", &DataSource::isVersionString)
-				.staticmethod("isVersionString")
-				.def("getNameFromURI", &DataSource::getNameFromURI)
-				.staticmethod("getNameFromURI")
-				.def("getVersionFromURI", &DataSource::getVersionFromURI)
-				.staticmethod("getVersionFromURI")
-				.def("create", &DataSource::create)
-				.staticmethod("create");
 	}
 }

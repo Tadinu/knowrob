@@ -55,7 +55,7 @@ namespace knowrob {
 
 		RedlandModel();
 
-		~RedlandModel();
+		virtual ~RedlandModel();
 
 		/**
 		 * Set the storage type.
@@ -220,8 +220,7 @@ namespace knowrob {
 
 		librdf_node *getContextNode(const FramedTriple &triple);
 
-	private:
-		void finalize();
+	private:void finalize();
 	};
 
 } // knowrob

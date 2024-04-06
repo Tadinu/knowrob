@@ -18,7 +18,7 @@ namespace knowrob {
 
 		explicit GraphSequence(const std::vector<std::shared_ptr<GraphTerm>> &terms)
 				: GraphConnective(GraphTermType::Sequence, terms) {}
-
+		virtual ~GraphSequence(){}
 		void write(std::ostream &os) const override;
 	};
 } // knowrob

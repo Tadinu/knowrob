@@ -21,10 +21,5 @@ bool Implication::isEqual(const Formula &other) const {
 namespace knowrob::py {
 	template<>
 	void createType<Implication>() {
-		using namespace boost::python;
-		class_<Implication, std::shared_ptr<Implication>, bases<CompoundFormula>>
-				("Implication", init<const FormulaPtr &, const FormulaPtr &>())
-				.def("antecedent", &Implication::antecedent, return_value_policy<copy_const_reference>())
-				.def("consequent", &Implication::consequent, return_value_policy<copy_const_reference>());
 	}
 }

@@ -13,8 +13,8 @@
 using namespace knowrob::mongo;
 
 Cursor::Cursor(const std::shared_ptr<Collection> &collection)
-		: cursor_(nullptr),
-		  collection_(collection),
+		: collection_(collection),
+          cursor_(nullptr),
 		  isAggregateQuery_(false),
 		  limit_(0) {
 	query_ = bson_new();

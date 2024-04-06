@@ -28,10 +28,5 @@ bool DataSourceHandler::hasDataHandler(const DataSourcePtr &dataSource) const {
 namespace knowrob::py {
 	template<>
 	void createType<DataSourceHandler>() {
-		using namespace boost::python;
-		class_<DataSourceHandler, std::shared_ptr<DataSourceHandler>>("DataSourceHandler", init<>())
-				.def("addDataHandler", +[]
-						(DataSourceHandler &x, const std::string &format, object &fn) { x.addDataHandler(format, fn); })
-				.def("loadDataSource", &DataSourceHandler::loadDataSource);
 	}
 }
