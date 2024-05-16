@@ -50,13 +50,14 @@ jobs:
         roscore &
         cd $GITHUB_WORKSPACE/ros_ws/src/knowrob
         source $GITHUB_WORKSPACE/ros_ws/devel_isolated/setup.bash
-        $GITHUB_WORKSPACE/ros_ws/build_isolated/knowrob/all_gtests --gtest_filter=* --gtest_output="xml:$GITHUB_WORKSPACE/gtest-knowrob.xml" --gtest_color=no
+        $GITHUB_WORKSPACE/ros_ws/devel_isolated/knowrob/lib/knowrob/all_gtests --gtest_filter=* --gtest_output="xml:$GITHUB_WORKSPACE/gtest-knowrob.xml" --gtest_color=no
     - name: Report test results
       uses: EnricoMi/publish-unit-test-result-action@v2
       if: always()
       with:
         junit_files: "gtest-knowrob.xml"
         action_fail: true
+        action_fail_on_inconclusive: true
     #####
     - name: Run doxygen
       if: ${{ github.event_name == 'push' }}
