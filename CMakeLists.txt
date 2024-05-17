@@ -350,6 +350,11 @@ if (WITH_ROS1_INTERFACE AND catkin_FOUND AND CATKIN_DEVEL_PREFIX)
         ${CATKIN_DEVEL_PREFIX}/lib/knowrob_py.so
         ${CMAKE_BINARY_DIR}/knowrob.so
         COMMAND_EXPAND_LISTS)
+    add_custom_command(TARGET knowrob_py POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CATKIN_DEVEL_PREFIX}/lib/knowrob_py.so
+        ${CATKIN_DEVEL_PREFIX}/lib/python3/dist-packages/knowrob/kb.so
+        COMMAND_EXPAND_LISTS)
 else()
     add_custom_command(TARGET knowrob_py POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy

@@ -1,4 +1,4 @@
-from knowrob import *
+from knowrob.kb import *
 
 
 def atom_to_python(term):

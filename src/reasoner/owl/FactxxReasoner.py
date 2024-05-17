@@ -1,4 +1,4 @@
-from knowrob import *
+from knowrob.kb import *
 from pyfactxx import coras
 from rdflib import BNode, URIRef, ConjunctiveGraph
 from rdflib import Literal as Literal_rdflib

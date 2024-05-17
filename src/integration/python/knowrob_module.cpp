@@ -72,7 +72,7 @@ static inline void register_triple_types() {
 	boost::python::class_<TripleList>("TripleList").def(boost::python::vector_indexing_suite<TripleList, true>());
 }
 
-BOOST_PYTHON_MODULE (knowrob) {
+BOOST_PYTHON_MODULE (kb) {
 	using namespace boost::python;
 	using namespace knowrob::py;
 

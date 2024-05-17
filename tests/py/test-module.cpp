@@ -26,7 +26,7 @@ protected:
 		try {
 			py::call<void>([&] {
 				// make sure the knowrob module is loaded, without it conversion of types won't work.
-				knowrob_module = python::import("knowrob");
+				knowrob_module = python::import("knowrob.kb");
 				test_module = python::import("tests.py.test_boost_python");
 			});
 		} catch (const std::exception& e) {
