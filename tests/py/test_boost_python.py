@@ -1,4 +1,9 @@
-from knowrob import *
+try:
+	# This case works in ros1 environments
+	from knowrob.kb import *
+except ImportError:
+	# If the import fails, import the knowrob.so directly
+	from knowrob import *
 
 
 def atom_to_python(term):

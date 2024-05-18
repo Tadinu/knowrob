@@ -2,6 +2,12 @@
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
+#ifndef MODULENAME
+#define MODULENAME knowrob
+#endif
+// Macro to convert another macro's expansion to a string
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
 
 #include <gtest/gtest.h>
 #include <boost/python/import.hpp>
@@ -21,12 +27,26 @@ protected:
 	static python::object knowrob_module;
 	static python::object AssertionError;
 
+
+	// Function to return the module name as a string
+	static constexpr const char *moduleNameStr() {
+		return TOSTRING(MODULENAME);
+	}
+
 	// Per-test-suite set-up.
 	static void SetUpTestSuite() {
 		try {
 			py::call<void>([&] {
 				// make sure the knowrob module is loaded, without it conversion of types won't work.
-				knowrob_module = python::import("knowrob");
+				// Conditionally import module based on MODULENAME
+				if (std::string(moduleNameStr()) == "knowrob") {
+					knowrob_module = python::import("knowrob");
+					std::cout << "Loaded knowrob module" << std::endl;
+				} else {
+					std::string fullModuleName = std::string("knowrob.") + moduleNameStr();
+					knowrob_module = python::import(fullModuleName.c_str());
+					std::cout << "Loaded " << fullModuleName << " module" << std::endl;
+				}
 				test_module = python::import("tests.py.test_boost_python");
 			});
 		} catch (const std::exception& e) {
@@ -34,7 +54,7 @@ protected:
 		}
 	}
 
-	static python::object do_call(std::string_view file, uint32_t line, std::string_view method_name, const std::function<python::object(python::object&)> &gn) {
+	static python::object do_call(std::string_view file, uint32_t line, std::string_view method_name, const std::function<python::object(python::object &)> &gn) {
 		EXPECT_FALSE(test_module.is_none());
 		if (test_module.is_none()) { return {}; }
 
