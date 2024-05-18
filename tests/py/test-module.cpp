@@ -49,13 +49,12 @@ protected:
 				}
 				test_module = python::import("tests.py.test_boost_python");
 			});
-		} catch (const std::exception &e) {
+		} catch (const std::exception& e) {
 			KB_ERROR("Failed to set up test suite. {}", e.what());
 		}
 	}
 
-	static python::object do_call(std::string_view file, uint32_t line, std::string_view method_name,
-								  const std::function<python::object(python::object &)> &gn) {
+	static python::object do_call(std::string_view file, uint32_t line, std::string_view method_name, const std::function<python::object(python::object &)> &gn) {
 		EXPECT_FALSE(test_module.is_none());
 		if (test_module.is_none()) { return {}; }
 
@@ -66,23 +65,21 @@ protected:
 		try {
 			return py::call<python::object>([&] { return gn(fn); });
 		} catch (const PythonError &err) {
-			GTEST_MESSAGE_AT_(file.data(), line, method_name.data(), testing::TestPartResult::kNonFatalFailure)
-					<< err.what();
+			GTEST_MESSAGE_AT_(file.data(), line, method_name.data(), testing::TestPartResult::kNonFatalFailure) << err.what();
 		}
 		return {};
 	}
 
-	static python::object
-	call(std::string_view file, uint32_t line, std::string_view method_name, const python::object &args...) {
+	static python::object call(std::string_view file, uint32_t line, std::string_view method_name, const python::object& args...) {
 		return do_call(
-				file, line, method_name,
-				[&](python::object &fn) { return fn(args); });
+			file, line, method_name,
+			[&](python::object &fn) { return fn(args); });
 	}
 
 	static python::object call(std::string_view file, uint32_t line, std::string_view method_name) {
 		return do_call(
-				file, line, method_name,
-				[&](python::object &fn) { return fn(); });
+			file, line, method_name,
+			[&](python::object &fn) { return fn(); });
 	}
 };
 
@@ -90,7 +87,7 @@ python::object BoostPythonTests::test_module;
 python::object BoostPythonTests::knowrob_module;
 
 #define EXPECT_CONVERTIBLE_TO_PY(x) EXPECT_NO_THROW( EXPECT_FALSE( \
-    py::call<bool>([&]{ return boost::python::object(x).is_none(); })))
+	py::call<bool>([&]{ return boost::python::object(x).is_none(); })))
 #define BOOST_TEST_CALL0(method_name, ...) call(__FILE__, __LINE__, method_name, __VA_ARGS__)
 #define BOOST_TEST_CALL1(method_name) call(__FILE__, __LINE__, method_name)
 
@@ -110,8 +107,8 @@ TEST_F(BoostPythonTests, string_copy_from_python) {
 	EXPECT_FALSE(boost::python::object(s).is_none());
 	auto extracted = boost::python::extract<String>(s);
 	EXPECT_TRUE(extracted.check());
-	if (extracted.check()) {
-		const auto &str = extracted();
+	if(extracted.check()) {
+		const auto& str = extracted();
 		EXPECT_EQ(str.stringForm(), "hello");
 	}
 }
