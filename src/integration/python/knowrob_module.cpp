@@ -2,6 +2,10 @@
  * This file is part of KnowRob, please consult
  * https://github.com/knowrob/knowrob for license details.
  */
+// Check if MODULENAME is defined, and if not, define it with default "kb"
+#ifndef MODULENAME
+#define MODULENAME knowrob
+#endif
 
 #include <iostream>
 #include <functional>
@@ -72,7 +76,7 @@ static inline void register_triple_types() {
 	boost::python::class_<TripleList>("TripleList").def(boost::python::vector_indexing_suite<TripleList, true>());
 }
 
-BOOST_PYTHON_MODULE (kb) {
+BOOST_PYTHON_MODULE (MODULENAME) {
 	using namespace boost::python;
 	using namespace knowrob::py;
 
