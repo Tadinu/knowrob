@@ -35,15 +35,18 @@ void BindingsCursor::setSubstitution(const std::shared_ptr<Bindings> &bindings) 
 				auto utf8 = bson_iter_utf8(&valIter_, nullptr);
 				// note: currently mongo KG does not store the type of the literal,
 				// so we cannot trivially distinguish between IRI and literal and need to guess here.
+				// note: we need to copy the string data here, as the bson_iter_utf8() returns a pointer
+				// to the internal buffer of the bson document, which is not guaranteed to be valid
+				// after the cursor is advanced.
 				switch (rdfNodeTypeGuess(utf8)) {
 					case RDFNodeType::BLANK:
-						bindings->set(var, std::make_shared<Blank>(utf8));
+						bindings->set(var, Blank::Tabled(utf8));
 						break;
 					case RDFNodeType::IRI:
-						bindings->set(var, std::make_shared<IRIAtom>(utf8));
+						bindings->set(var, IRIAtom::Tabled(utf8));
 						break;
 					case RDFNodeType::LITERAL:
-						bindings->set(var, std::make_shared<StringView>(utf8));
+						bindings->set(var, std::make_shared<String>(utf8));
 						break;
 				}
 				break;
