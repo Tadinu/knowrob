@@ -25,6 +25,7 @@ Vocabulary::Vocabulary()
 	defineProperty(rdf::type);
 	defineProperty(rdfs::subPropertyOf);
 	defineProperty(rdfs::subClassOf);
+	defineProperty(owl::inverseOf);
 }
 
 bool Vocabulary::isDefinedClass(const std::string_view &iri) {
