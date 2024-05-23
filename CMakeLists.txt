@@ -113,6 +113,12 @@ if (WITH_ROS1_INTERFACE AND catkin_FOUND)
             Tell.action
     )
 
+    add_service_files(
+            DIRECTORY ros1/srv
+            FILES
+            AskIncrementalFinish.srv
+    )
+
     generate_messages(DEPENDENCIES
             std_msgs
             actionlib_msgs)
