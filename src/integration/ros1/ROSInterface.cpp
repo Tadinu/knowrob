@@ -46,6 +46,8 @@ ROSInterface::ROSInterface(const boost::property_tree::ptree &config)
 	askincremental_action_server_.start();
 	askincremental_next_solution_action_server_.start();
 	tell_action_server_.start();
+	ask_incremental_finish_service_ = nh_.advertiseService("knowrob/askincremental_finish",
+														   &ROSInterface::handleAskIncrementalFinish, this);
 }
 
 ROSInterface::~ROSInterface() = default;
@@ -207,41 +209,36 @@ void ROSInterface::executeAskIncrementalNextSolutionCB(const AskIncrementalNextS
 	// Lock mutex
 	std::lock_guard<std::mutex> lock(query_mutex_);
 
-	// Get result queue for query ID
-	auto resultQueue = query_results_[goal->queryId];
-
-	// Check if query ID is valid
-	if (resultQueue == nullptr) {
-		AskIncrementalNextSolutionResult result;
-		result.status = AskIncrementalNextSolutionResult::INVALID_QUERY_ID;
-		askincremental_next_solution_action_server_.setAborted(result);
-		return;
-	}
-
 	// Define feedback, result and isTrue
 	AskIncrementalNextSolutionFeedback feedback;
 	AskIncrementalNextSolutionResult result;
 	bool isTrue = false;
 
-	// Implement your action here
-	while (true) {
-		auto nextResult = resultQueue->pop_front();
+	// Get result queue for query ID
+	auto resultQueue = query_results_[goal->queryId];
 
-		if (nextResult->indicatesEndOfEvaluation()) {
-			break;
-		} else if (nextResult->tokenType() == TokenType::ANSWER_TOKEN) {
-			auto answer = std::static_pointer_cast<const Answer>(nextResult);
-			if (answer->isPositive()) {
-				auto positiveAnswer = std::static_pointer_cast<const AnswerYes>(answer);
-				isTrue = true;
-				if (positiveAnswer->substitution()->empty()) {
-					break;
-				} else {
-					// Publish feedback
-					result.answer = createGraphAnswer(positiveAnswer);
-				}
+	// Check if query ID is valid
+	if (resultQueue == nullptr) {
+		result.status = AskIncrementalNextSolutionResult::INVALID_QUERY_ID;
+		askincremental_next_solution_action_server_.setAborted(result);
+		return;
+	}
+
+	// Retrieve next solution
+	auto nextResult = resultQueue->pop_front();
+	if (nextResult->tokenType() == TokenType::ANSWER_TOKEN) {
+		auto answer = std::static_pointer_cast<const Answer>(nextResult);
+		if (answer->isPositive()) {
+			auto positiveAnswer = std::static_pointer_cast<const AnswerYes>(answer);
+			isTrue = true;
+			if (!positiveAnswer->substitution()->empty()) {
+				// Publish feedback
+				result.answer = createGraphAnswer(positiveAnswer);
 			}
 		}
+	} else if (nextResult->indicatesEndOfEvaluation()) {
+		// Remove id
+		query_results_.erase(goal->queryId);
 	}
 
 	// If there is no next solution set status to false
@@ -251,12 +248,29 @@ void ROSInterface::executeAskIncrementalNextSolutionCB(const AskIncrementalNextS
 		result.status = AskIncrementalNextSolutionResult::FALSE;
 	}
 
-	// Publish feedback
+	// Publish finish feedback
 	feedback.finished = true;
 	askincremental_next_solution_action_server_.publishFeedback(feedback);
 	// Publish result
 	askincremental_next_solution_action_server_.setSucceeded(result);
+	
+}
 
+bool ROSInterface::handleAskIncrementalFinish(AskIncrementalFinish::Request &req,
+											  AskIncrementalFinish::Response &res) {
+	std::lock_guard<std::mutex> lock(query_mutex_);
+
+	// Check if the query ID exists
+	auto it = query_results_.find(req.queryId);
+	if (it != query_results_.end()) {
+		// Remove the query ID from the map
+		query_results_.erase(it);
+		res.success = true;
+	} else {
+		res.success = false;
+	}
+
+	return true;
 }
 
 void ROSInterface::executeAskOneCB(const AskOneGoalConstPtr &goal) {

@@ -26,6 +26,7 @@
 #include <knowrob/AskOneAction.h>
 #include <knowrob/AskIncrementalAction.h>
 #include <knowrob/AskIncrementalNextSolutionAction.h>
+#include <knowrob/AskIncrementalFinish.h>
 #include <knowrob/TellAction.h>
 #include <actionlib/server/simple_action_server.h>
 // std
@@ -42,6 +43,9 @@ namespace knowrob {
 		actionlib::SimpleActionServer<AskIncrementalAction> askincremental_action_server_;
 		actionlib::SimpleActionServer<AskIncrementalNextSolutionAction> askincremental_next_solution_action_server_;
 		actionlib::SimpleActionServer<TellAction> tell_action_server_;
+
+		// ROS Services
+		ros::ServiceServer ask_incremental_finish_service_;
 
 		// KnowledgeBase
 		KnowledgeBase kb_;
@@ -92,6 +96,15 @@ namespace knowrob {
 		 * @param goal TellGoalConstPtr
 		 */
 		void executeTellCB(const TellGoalConstPtr &goal);
+
+		/**
+		 * Handle the AskIncrementalFinish service
+		 * @param req AskIncrementalFinish::Request
+		 * @param res AskIncrementalFinish::Response
+		 * @return true if the service was handled successfully
+		 */
+		bool handleAskIncrementalFinish(AskIncrementalFinish::Request &req,
+										AskIncrementalFinish::Response &res);
 
 		/**
 		 * Translate a GraphQueryMessage into a map of key-value pairs
